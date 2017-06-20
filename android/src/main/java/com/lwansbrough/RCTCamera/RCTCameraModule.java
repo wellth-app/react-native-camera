@@ -38,7 +38,7 @@ import java.util.Map;
 import javax.annotation.Nullable;
 
 public class RCTCameraModule extends ReactContextBaseJavaModule
-    implements MediaRecorder.OnInfoListener, MediaRecorder.OnErrorListener, LifecycleEventListener {
+        implements MediaRecorder.OnInfoListener, MediaRecorder.OnErrorListener, LifecycleEventListener {
     private static final String TAG = "RCTCameraModule";
 
     public static final int RCT_CAMERA_ASPECT_FILL = 0;
@@ -92,7 +92,7 @@ public class RCTCameraModule extends ReactContextBaseJavaModule
     }
 
     public static ReactApplicationContext getReactContextSingleton() {
-      return _reactContext;
+        return _reactContext;
     }
 
     /**
@@ -629,12 +629,12 @@ public class RCTCameraModule extends ReactContextBaseJavaModule
         };
 
         if(mSafeToCapture) {
-          try {
-            camera.takePicture(null, null, captureCallback);
-            mSafeToCapture = false;
-          } catch(RuntimeException ex) {
-              Log.e(TAG, "Couldn't capture photo.", ex);
-          }
+            try {
+                camera.takePicture(null, null, captureCallback);
+                mSafeToCapture = false;
+            } catch(RuntimeException ex) {
+                Log.e(TAG, "Couldn't capture photo.", ex);
+            }
         }
     }
 

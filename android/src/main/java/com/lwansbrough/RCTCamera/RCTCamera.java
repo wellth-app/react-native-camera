@@ -153,21 +153,21 @@ public class RCTCamera {
     }
 
     private Camera.Size getClosestSize(List<Camera.Size> supportedSizes, int matchWidth, int matchHeight) {
-      Camera.Size closestSize = null;
-      for (Camera.Size size : supportedSizes) {
-          if (closestSize == null) {
-              closestSize = size;
-              continue;
-          }
+        Camera.Size closestSize = null;
+        for (Camera.Size size : supportedSizes) {
+            if (closestSize == null) {
+                closestSize = size;
+                continue;
+            }
 
-          int currentDelta = Math.abs(closestSize.width - matchWidth) * Math.abs(closestSize.height - matchHeight);
-          int newDelta = Math.abs(size.width - matchWidth) * Math.abs(size.height - matchHeight);
+            int currentDelta = Math.abs(closestSize.width - matchWidth) * Math.abs(closestSize.height - matchHeight);
+            int newDelta = Math.abs(size.width - matchWidth) * Math.abs(size.height - matchHeight);
 
-          if (newDelta < currentDelta) {
-              closestSize = size;
-          }
-      }
-      return closestSize;
+            if (newDelta < currentDelta) {
+                closestSize = size;
+            }
+        }
+        return closestSize;
     }
 
     protected List<Camera.Size> getSupportedVideoSizes(Camera camera) {
@@ -198,7 +198,7 @@ public class RCTCamera {
     }
 
     public boolean isBarcodeScannerEnabled() {
-      return _barcodeScannerEnabled;
+        return _barcodeScannerEnabled;
     }
 
     public void setBarcodeScannerEnabled(boolean barcodeScannerEnabled) {
