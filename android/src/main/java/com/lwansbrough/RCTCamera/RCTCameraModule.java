@@ -6,6 +6,10 @@
 package com.lwansbrough.RCTCamera;
 
 import android.content.ContentValues;
+import android.content.Context;
+import android.graphics.ImageFormat;
+import android.graphics.Rect;
+import android.graphics.YuvImage;
 import android.hardware.Camera;
 import android.media.*;
 import android.net.Uri;
@@ -21,9 +25,12 @@ import com.facebook.react.bridge.Promise;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.bridge.ReactMethod;
+import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.bridge.WritableNativeMap;
+import com.wellthapp.ContinuousRCTCamera.CameraPreviewCallback;
+import com.wellthapp.ContinuousRCTCamera.Utils;
 
 import java.io.*;
 import java.text.SimpleDateFormat;
@@ -70,6 +77,9 @@ public class RCTCameraModule extends ReactContextBaseJavaModule
     public static final String RCT_CAMERA_CAPTURE_QUALITY_480P = "480p";
     public static final int MEDIA_TYPE_IMAGE = 1;
     public static final int MEDIA_TYPE_VIDEO = 2;
+
+    private static final int DEFAULT_INTERVAL_MS = 500;
+    private static final int POSITIVE_IDENTIFICATION_TIMEOUT_MS = 20000;
 
     private static ReactApplicationContext _reactContext;
     private RCTSensorOrientationChecker _sensorOrientationChecker;
@@ -499,6 +509,22 @@ public class RCTCameraModule extends ReactContextBaseJavaModule
         } else {
             captureWithOrientation(options, promise, orientation);
         }
+    }
+
+
+
+    @ReactMethod
+    public void captureContinuous(final ReadableMap options, final Promise promise) {
+
+        // Determine how often an image should be captured
+        final int captureInterval = options.hasKey("interval") ? options.getInt("interval") : DEFAULT_INTERVAL_MS;
+        final int positiveIdentificationTimeout = options.hasKey("positiveIdentificationTimeout") ? options.getInt("positiveIdentificationTimeout") : POSITIVE_IDENTIFICATION_TIMEOUT_MS;
+        final ReadableArray acceptedTagsArray = options.hasKey("acceptedTags") ? options.getArray("acceptedTags") : null;
+        final List<String> acceptedTags = Utils.unpackReadableStringArray(acceptedTagsArray);
+        final Camera camera = RCTCamera.getInstance().acquireCameraInstance(options.getInt("type"));
+
+        camera.setPreviewCallback(new CameraPreviewCallback(captureInterval, positiveIdentificationTimeout, acceptedTags));
+
     }
 
     private void captureWithOrientation(final ReadableMap options, final Promise promise, int deviceOrientation) {
