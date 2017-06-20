@@ -1,6 +1,6 @@
-import React from 'react';
-import { AppRegistry } from 'react-native';
+import React from "react";
+import { AppRegistry } from "react-native";
 
-import Example from './Example';
+import ContinuousCapture from "./src/ContinuousCapture";
 
-AppRegistry.registerComponent('Example', () => Example);
+AppRegistry.registerComponent("Example", () => ContinuousCapture);

@@ -15,13 +15,14 @@
 @property (nonatomic, weak) RCTCameraManager *manager;
 @property (nonatomic, weak) RCTBridge *bridge;
 @property (nonatomic, strong) RCTCameraFocusSquare *camFocus;
+@property (nonatomic, copy) RCTDirectEventBlock onFocusChanged;
 
 @end
 
 @implementation RCTCamera
 {
   BOOL _multipleTouches;
-  BOOL _onFocusChanged;
+  // BOOL _onFocusChanged;
   BOOL _defaultOnFocusComponent;
   BOOL _onZoomChanged;
   BOOL _previousIdleTimerDisabled;
@@ -41,12 +42,12 @@
   }
 }
 
-- (void)setOnFocusChanged:(BOOL)enabled
-{
-  if (_onFocusChanged != enabled) {
-    _onFocusChanged = enabled;
-  }
-}
+// - (void)setOnFocusChanged:(BOOL)enabled
+// {
+//   if (_onFocusChanged != enabled) {
+//     _onFocusChanged = enabled;
+//   }
+// }
 
 - (void)setDefaultOnFocusComponent:(BOOL)enabled
 {
@@ -73,7 +74,7 @@
     [self.manager initializeCaptureSessionInput:AVMediaTypeVideo];
     [self.manager startSession];
     _multipleTouches = NO;
-    _onFocusChanged = NO;
+    _onFocusChanged = ^(NSDictionary* input) { };
     _defaultOnFocusComponent = YES;
     _onZoomChanged = NO;
     _previousIdleTimerDisabled = [UIApplication sharedApplication].idleTimerDisabled;
@@ -141,14 +142,15 @@
         {
             [self.camFocus removeFromSuperview];
         }
-        NSDictionary *event = @{
+
+        _onFocusChanged(@{
           @"target": self.reactTag,
           @"touchPoint": @{
             @"x": [NSNumber numberWithDouble:touchPoint.x],
             @"y": [NSNumber numberWithDouble:touchPoint.y]
           }
-        };
-        [self.bridge.eventDispatcher sendInputEventWithName:@"focusChanged" body:event];
+        });
+        // [self.bridge.eventDispatcher sendInputEventWithName:@"focusChanged" body:event];
 
         // Show animated rectangle on the touched area
         if (_defaultOnFocusComponent) {

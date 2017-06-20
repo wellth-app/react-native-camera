@@ -1,12 +1,12 @@
-import React from 'react';
+import React from "react";
 import {
   Image,
   StatusBar,
   StyleSheet,
   TouchableOpacity,
   View,
-} from 'react-native';
-import Camera from 'react-native-camera';
+} from "react-native";
+import Camera from "react-native-camera";
 
 const styles = StyleSheet.create({
   container: {
@@ -14,33 +14,33 @@ const styles = StyleSheet.create({
   },
   preview: {
     flex: 1,
-    justifyContent: 'flex-end',
-    alignItems: 'center',
+    justifyContent: "flex-end",
+    alignItems: "center",
   },
   overlay: {
-    position: 'absolute',
+    position: "absolute",
     padding: 16,
     right: 0,
     left: 0,
-    alignItems: 'center',
+    alignItems: "center",
   },
   topOverlay: {
     top: 0,
     flex: 1,
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
   },
   bottomOverlay: {
     bottom: 0,
-    backgroundColor: 'rgba(0,0,0,0.4)',
-    flexDirection: 'row',
-    justifyContent: 'center',
-    alignItems: 'center',
+    backgroundColor: "rgba(0,0,0,0.4)",
+    flexDirection: "row",
+    justifyContent: "center",
+    alignItems: "center",
   },
   captureButton: {
     padding: 15,
-    backgroundColor: 'white',
+    backgroundColor: "white",
     borderRadius: 40,
   },
   typeButton: {
@@ -68,37 +68,39 @@ export default class Example extends React.Component {
         orientation: Camera.constants.Orientation.auto,
         flashMode: Camera.constants.FlashMode.auto,
       },
-      isRecording: false
+      isRecording: false,
     };
   }
 
   takePicture = () => {
     if (this.camera) {
-      this.camera.capture()
-        .then((data) => console.log(data))
+      this.camera
+        .capture()
+        .then(data => console.log(data))
         .catch(err => console.error(err));
     }
-  }
+  };
 
   startRecording = () => {
     if (this.camera) {
-      this.camera.capture({mode: Camera.constants.CaptureMode.video})
-          .then((data) => console.log(data))
-          .catch(err => console.error(err));
+      this.camera
+        .capture({ mode: Camera.constants.CaptureMode.video })
+        .then(data => console.log(data))
+        .catch(err => console.error(err));
       this.setState({
-        isRecording: true
+        isRecording: true,
       });
     }
-  }
+  };
 
   stopRecording = () => {
     if (this.camera) {
       this.camera.stopCapture();
       this.setState({
-        isRecording: false
+        isRecording: false,
       });
     }
-  }
+  };
 
   switchType = () => {
     let newType;
@@ -116,16 +118,16 @@ export default class Example extends React.Component {
         type: newType,
       },
     });
-  }
+  };
 
   get typeIcon() {
     let icon;
     const { back, front } = Camera.constants.Type;
 
     if (this.state.camera.type === back) {
-      icon = require('./assets/ic_camera_rear_white.png');
+      icon = require("../assets/ic_camera_rear_white.png");
     } else if (this.state.camera.type === front) {
-      icon = require('./assets/ic_camera_front_white.png');
+      icon = require("../assets/ic_camera_front_white.png");
     }
 
     return icon;
@@ -149,18 +151,18 @@ export default class Example extends React.Component {
         flashMode: newFlashMode,
       },
     });
-  }
+  };
 
   get flashIcon() {
     let icon;
     const { auto, on, off } = Camera.constants.FlashMode;
 
     if (this.state.camera.flashMode === auto) {
-      icon = require('./assets/ic_flash_auto_white.png');
+      icon = require("../assets/ic_flash_auto_white.png");
     } else if (this.state.camera.flashMode === on) {
-      icon = require('./assets/ic_flash_on_white.png');
+      icon = require("../assets/ic_flash_on_white.png");
     } else if (this.state.camera.flashMode === off) {
-      icon = require('./assets/ic_flash_off_white.png');
+      icon = require("../assets/ic_flash_off_white.png");
     }
 
     return icon;
@@ -169,12 +171,9 @@ export default class Example extends React.Component {
   render() {
     return (
       <View style={styles.container}>
-        <StatusBar
-          animated
-          hidden
-        />
+        <StatusBar animated hidden />
         <Camera
-          ref={(cam) => {
+          ref={cam => {
             this.camera = cam;
           }}
           style={styles.preview}
@@ -188,60 +187,39 @@ export default class Example extends React.Component {
           mirrorImage={false}
         />
         <View style={[styles.overlay, styles.topOverlay]}>
-          <TouchableOpacity
-            style={styles.typeButton}
-            onPress={this.switchType}
-          >
-            <Image
-              source={this.typeIcon}
-            />
+          <TouchableOpacity style={styles.typeButton} onPress={this.switchType}>
+            <Image source={this.typeIcon} />
           </TouchableOpacity>
           <TouchableOpacity
             style={styles.flashButton}
             onPress={this.switchFlash}
           >
-            <Image
-              source={this.flashIcon}
-            />
+            <Image source={this.flashIcon} />
           </TouchableOpacity>
         </View>
         <View style={[styles.overlay, styles.bottomOverlay]}>
-          {
-            !this.state.isRecording
-            &&
+          {(!this.state.isRecording &&
             <TouchableOpacity
-                style={styles.captureButton}
-                onPress={this.takePicture}
+              style={styles.captureButton}
+              onPress={this.takePicture}
             >
-              <Image
-                  source={require('./assets/ic_photo_camera_36pt.png')}
-              />
-            </TouchableOpacity>
-            ||
-            null
-          }
+              <Image source={require("../assets/ic_photo_camera_36pt.png")} />
+            </TouchableOpacity>) ||
+            null}
           <View style={styles.buttonsSpace} />
-          {
-              !this.state.isRecording
-              &&
-              <TouchableOpacity
-                  style={styles.captureButton}
-                  onPress={this.startRecording}
-              >
-                <Image
-                    source={require('./assets/ic_videocam_36pt.png')}
-                />
-              </TouchableOpacity>
-              ||
-              <TouchableOpacity
-                  style={styles.captureButton}
-                  onPress={this.stopRecording}
-              >
-                <Image
-                    source={require('./assets/ic_stop_36pt.png')}
-                />
-              </TouchableOpacity>
-          }
+          {(!this.state.isRecording &&
+            <TouchableOpacity
+              style={styles.captureButton}
+              onPress={this.startRecording}
+            >
+              <Image source={require("../assets/ic_videocam_36pt.png")} />
+            </TouchableOpacity>) ||
+            <TouchableOpacity
+              style={styles.captureButton}
+              onPress={this.stopRecording}
+            >
+              <Image source={require("../assets/ic_stop_36pt.png")} />
+            </TouchableOpacity>}
         </View>
       </View>
     );
