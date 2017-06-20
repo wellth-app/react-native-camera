@@ -9,6 +9,7 @@ import android.graphics.Rect;
 import android.graphics.YuvImage;
 import android.hardware.Camera;
 import android.media.CamcorderProfile;
+import android.os.AsyncTask;
 import android.os.Environment;
 import android.util.Log;
 
@@ -284,47 +285,79 @@ public class RCTCamera {
     }
 
     public void setRepeatingCapture(int cameraType) {
-        Camera camera = this.acquireCameraInstance(cameraType);
+        final Camera camera = this.acquireCameraInstance(cameraType);
         if (camera == null) {
             return;
         }
 
-        final int previewFrameRate = camera.getParameters().getPreviewFrameRate();
-        final Camera.Size previewSize = camera.getParameters().getPreviewSize();
+        final Camera.Parameters cameraParameters = camera.getParameters();
+
+        final int previewFramesPerSecond = cameraParameters.getPreviewFrameRate();
+        final int previewFramesPerMinute = previewFramesPerSecond * 60;
+
+        final Camera.Size previewSize = cameraParameters.getPreviewSize();
 
         final ReactContext reactContext = RCTCameraModule.getReactContextSingleton();
+        final int THROTTLE_PER_MINUTE = 20;
+
+        final int MOD = previewFramesPerMinute / THROTTLE_PER_MINUTE;
+
+
 
         camera.setPreviewCallback(new Camera.PreviewCallback() {
+
+            long frameCounter = 0;
             @Override
-            public void onPreviewFrame(byte[] data, Camera camera) {
-
-                Camera.Parameters parameters = camera.getParameters();
-                final int imageFormat = parameters.getPreviewFormat();
-                if (imageFormat == ImageFormat.NV21) {
-                    Rect rect = new Rect(0, 0, previewSize.width, previewSize.height);
-                    YuvImage img = new YuvImage(data, ImageFormat.NV21, previewSize.width, previewSize.height, null);
-                    OutputStream outStream = null;
-                    try
-                    {
-                        final File outputFile = getOutputFile();
-                        outStream = new FileOutputStream(outputFile);
-                        img.compressToJpeg(rect, 100, outStream);
-                        outStream.flush();
-                        outStream.close();
-
-                        Log.d("RCTCamera", "Emitting file capture event = " + outputFile.getAbsolutePath());
-                        WritableMap params = Arguments.createMap();
-                        params.putString("path", outputFile.getAbsolutePath());
-                        reactContext.getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class).emit("CaptureEvent", params);
+            public void onPreviewFrame(final byte[] data, final Camera camera) {
 
 
-                    }
-                    catch (FileNotFoundException e) {
-                        e.printStackTrace();
-                    }
-                    catch (IOException e) {
-                        e.printStackTrace();
-                    }
+                if ((frameCounter % MOD) == 0) {
+
+                    // The Very Basic
+                    new AsyncTask<Void, Void, Void>() {
+                        protected void onPreExecute() {
+                            Log.d("RCTCamera", "About to process image");
+                        }
+                        protected Void doInBackground(Void... unused) {
+                            Camera.Parameters parameters = camera.getParameters();
+                            final int imageFormat = parameters.getPreviewFormat();
+                            if (imageFormat == ImageFormat.NV21) {
+                                Rect rect = new Rect(0, 0, previewSize.width, previewSize.height);
+                                YuvImage img = new YuvImage(data, ImageFormat.NV21, previewSize.width, previewSize.height, null);
+                                OutputStream outStream = null;
+                                try
+                                {
+                                    final File outputFile = getOutputFile();
+                                    outStream = new FileOutputStream(outputFile);
+                                    img.compressToJpeg(rect, 100, outStream);
+                                    outStream.flush();
+                                    outStream.close();
+
+                                    Log.d("RCTCamera", "Emitting file capture event = " + outputFile.getAbsolutePath());
+                                    WritableMap params = Arguments.createMap();
+                                    params.putString("path", outputFile.getAbsolutePath());
+                                    reactContext.getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class).emit("CaptureEvent", params);
+
+
+
+                                }
+                                catch (FileNotFoundException e) {
+                                    e.printStackTrace();
+                                }
+                                catch (IOException e) {
+                                    e.printStackTrace();
+                                } finally {
+                                    frameCounter += 1;
+                                }
+                            }
+
+                            return null;
+                        }
+                        protected void onPostExecute(Void unused) {
+                            Log.d("RCTCamera", "Finished processing image");
+                        }
+                    }.execute();
+
                 }
 
             }
@@ -525,6 +558,8 @@ public class RCTCamera {
                 releaseCameraInstance(RCTCameraModule.RCT_CAMERA_TYPE_BACK);
             }
         }
+
+        Log.i("RCTCAMERA", "STARTING THE RCTCAMERA!");
     }
 
     private class CameraInfoWrapper {
