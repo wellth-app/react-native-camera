@@ -77,7 +77,6 @@ typedef NS_ENUM(NSInteger, RCTCameraTorchMode) {
 @property(nonatomic, strong) RCTCamera *camera;
 
 @property(nonatomic, assign) BOOL continuousCapture;
-/// A property which indicates whether or not to capture a new frame.
 @property(nonatomic, assign) BOOL readyForCapture;
 
 /// Video device output used during continuous capture.
