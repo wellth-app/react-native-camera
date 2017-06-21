@@ -17,7 +17,7 @@
 
 @property (strong, nonatomic) RCTSensorOrientationChecker * sensorOrientationChecker;
 @property (assign, nonatomic) NSInteger* flashMode;
-@property (nonatomic, strong) dispatch_queue_t *continuousCaptureProcessingQueue;
+@property (nonatomic, strong) dispatch_queue_t continuousCaptureProcessingQueue;
 
 @end
 
