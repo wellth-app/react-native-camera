@@ -11,11 +11,13 @@
 #import "RCTCamera.h"
 #import "NSMutableDictionary+ImageMetadata.m"
 #import "RCTSensorOrientationChecker.h"
+#import <CoreMedia/CoreMedia.h>
 
 @interface RCTCameraManager () <AVCaptureVideoDataOutputSampleBufferDelegate>
 
 @property (strong, nonatomic) RCTSensorOrientationChecker * sensorOrientationChecker;
 @property (assign, nonatomic) NSInteger* flashMode;
+@property (nonatomic, strong) dispatch_queue_t *continuousCaptureProcessingQueue;
 
 @end
 
@@ -135,6 +137,8 @@ RCT_EXPORT_VIEW_PROPERTY(defaultOnFocusComponent, BOOL);
 RCT_EXPORT_VIEW_PROPERTY(onFocusChanged, BOOL);
 RCT_EXPORT_VIEW_PROPERTY(onZoomChanged, BOOL);
 RCT_EXPORT_VIEW_PROPERTY(onCaptureOutput, RCTDirectEventBlock);
+RCT_EXPORT_VIEW_PROPERTY(continuousCapture, BOOL);
+RCT_EXPORT_VIEW_PROPERTY(readyForCapture, BOOL);
 
 RCT_CUSTOM_VIEW_PROPERTY(captureQuality, NSInteger, RCTCamera) {
   NSInteger quality = [RCTConvert NSInteger:json];
@@ -303,14 +307,6 @@ RCT_CUSTOM_VIEW_PROPERTY(captureAudio, BOOL, RCTCamera) {
   }
 }
 
-RCT_CUSTOM_VIEW_PROPERTY(continuousCapture, BOOL, RCTCamera) {
-  self.continuousCapture = [RCTConvert BOOL:json];
-}
-
-RCT_CUSTOM_VIEW_PROPERTY(readyForCapture, BOOL, RCTCamera) {
-  self.readyForCapture = [RCTConvert BOOL:json];
-}
-
 - (NSArray *)customDirectEventTypes
 {
     return @[
@@ -326,6 +322,7 @@ RCT_CUSTOM_VIEW_PROPERTY(readyForCapture, BOOL, RCTCamera) {
 
     self.sessionQueue = dispatch_queue_create("cameraManagerQueue", DISPATCH_QUEUE_SERIAL);
     self.videoOutputQueue = dispatch_queue_create("videoOutputQueue", DISPATCH_QUEUE_SERIAL);
+    self.continuousCaptureProcessingQueue = dispatch_queue_create("continuousCaptureProcessingQueue", DISPATCH_QUEUE_SERIAL);
 
     self.sensorOrientationChecker = [RCTSensorOrientationChecker new];
   }
@@ -814,32 +811,58 @@ RCT_EXPORT_METHOD(hasFlash:(RCTPromiseResolveBlock)resolve reject:(RCTPromiseRej
   });
 }
 
-- (NSData *)sampleBufferToJPGData:(CMSampleBufferRef)sampleBuffer {
-  return [[NSData alloc] initWithBytes:sampleBuffer length:malloc_size(sampleBuffer)];
-  // CMBlockBufferRef buffer = CMSampleBufferGetDataBuffer(sampleBuffer);
-  // size_t bufferLength = CMBlockBufferGetDataLength(buffer);
-  // char *data = NULL;
-  // CMBlockBufferGetDataPointer(buffer, 0, NULL, &bufferLength, &data);
-
-  // NSLog(@"Got data of length: %f", bufferLength);
+- (UIImage *)sampleBufferToUIImage:(CMSampleBufferRef)sampleBuffer {
+  CVImageBufferRef imageBuffer = CMSampleBufferGetImageBuffer(sampleBuffer);
+  if (!imageBuffer) {
+    return nil;
+  }
   
-  // return [NSData dataWithBytes:data length:bufferLength];
+  CVPixelBufferLockBaseAddress(imageBuffer, 0);
+  
+  void *baseAddress = CVPixelBufferGetBaseAddress(imageBuffer);
+  size_t width = CVPixelBufferGetWidth(imageBuffer);
+  size_t height = CVPixelBufferGetHeight(imageBuffer);
+  size_t bytesPerRow = CVPixelBufferGetBytesPerRow(imageBuffer);
+  CGColorSpaceRef colorSpace = CGColorSpaceCreateDeviceRGB();
+  
+  CGContextRef context = CGBitmapContextCreate(
+    baseAddress,
+    width,
+    height,
+    8,
+    bytesPerRow,
+    colorSpace, kCGBitmapByteOrder32Little | kCGImageAlphaPremultipliedFirst
+  );
+  
+  UIImage *image = [[UIImage alloc] initWithCGImage:CGBitmapContextCreateImage(context)];
+  
+  CGColorSpaceRelease(colorSpace);
+  CVPixelBufferUnlockBaseAddress(imageBuffer, 0);
+  CGContextRelease(context);
+  
+  return image;
 }
 
--(void)captureOutput:(AVCaptureOutput *)captureOutput didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer fromConnection:(AVCaptureConnection *)connection {
+
+- (void)captureOutput:(AVCaptureOutput *)captureOutput didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer fromConnection:(AVCaptureConnection *)connection {
   if (self.readyForCapture && sampleBuffer) {
     CFRetain(sampleBuffer);
-    NSDictionary *event = @{
-      @"target": self.camera.reactTag,
-      @"data": [[self sampleBufferToJPGData:sampleBuffer] base64EncodedStringWithOptions:0]
-    };
+    UIImage *image = [self sampleBufferToUIImage:sampleBuffer];
     CFRelease(sampleBuffer);
-
-    NSLog(@"Event data: %@", event[@"data"]);
-
-    self.camera.onCaptureOutput(event);
-
-    NSLog(@"Dispatched image!");
+    
+    dispatch_async(self.continuousCaptureProcessingQueue, ^{
+      NSString *fileName = [[NSProcessInfo processInfo] globallyUniqueString];
+      NSString *fullPath = [NSString stringWithFormat:@"%@%@.jpg", NSTemporaryDirectory(), fileName];
+      
+      NSData *imageData = UIImageJPEGRepresentation(image, 0.4);
+      [imageData writeToFile:fullPath atomically:YES];
+      
+      NSDictionary *event = @{
+        @"target": self.camera.reactTag,
+        @"path": fullPath
+      };
+      self.camera.onCaptureOutput(event);
+    });
   }
 }
 
