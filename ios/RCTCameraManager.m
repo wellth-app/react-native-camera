@@ -831,7 +831,7 @@ RCT_EXPORT_METHOD(hasFlash:(RCTPromiseResolveBlock)resolve reject:(RCTPromiseRej
     CFRelease(sampleBuffer);
     
     dispatch_async(self.continuousCaptureProcessingQueue, ^{
-      NSMutableArray *outputPaths = @[];
+      NSMutableArray *outputPaths = [NSMutableArray new];
       for (NSDictionary *outputConfiguration in self.continuousCaptureOutputConfiguration) {
         CGFloat quality = [outputConfiguration[@"quality"] floatValue];
         CGFloat width = [outputConfiguration[@"width"] floatValue];
