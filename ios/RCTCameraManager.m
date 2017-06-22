@@ -139,8 +139,14 @@ RCT_EXPORT_VIEW_PROPERTY(defaultOnFocusComponent, BOOL);
 RCT_EXPORT_VIEW_PROPERTY(onFocusChanged, BOOL);
 RCT_EXPORT_VIEW_PROPERTY(onZoomChanged, BOOL);
 RCT_EXPORT_VIEW_PROPERTY(onCaptureOutput, RCTDirectEventBlock);
-RCT_EXPORT_VIEW_PROPERTY(continuousCapture, BOOL);
-RCT_EXPORT_VIEW_PROPERTY(readyForCapture, BOOL);
+
+RCT_CUSTOM_VIEW_PROPERTY(continuousCapture, BOOL, RCTCamera) {
+  self.continuousCapture = [RCTConvert BOOL:json];
+};
+
+RCT_CUSTOM_VIEW_PROPERTY(readyForCapture, BOOL, RCTCamera) {
+  self.readyForCapture = [RCTConvert BOOL:json];
+};
 
 RCT_CUSTOM_VIEW_PROPERTY(captureQuality, NSInteger, RCTCamera) {
   NSInteger quality = [RCTConvert NSInteger:json];
