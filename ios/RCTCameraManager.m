@@ -833,12 +833,12 @@ RCT_EXPORT_METHOD(hasFlash:(RCTPromiseResolveBlock)resolve reject:(RCTPromiseRej
     dispatch_async(self.continuousCaptureProcessingQueue, ^{
       NSMutableArray *outputPaths = @[];
       for (NSDictionary *outputConfiguration in self.continuousCaptureOutputConfiguration) {
-        CGFloat width = outputConfiguration[@"width"] ?? -1;
-        CGFloat height = outputConfiguration[@"height"] ?? -1;
+        CGFloat quality = [outputConfiguration[@"quality"] floatValue];
+        CGFloat width = [outputConfiguration[@"width"] floatValue];
+        CGFloat height = [outputConfiguration[@"height"] floatValue];
         BOOL scaleImage = (width > 0 && height > 0);
         
-        CGFloat quality = outputConfiguration[@"quality"] ?? 1.0;
-        NSString *filePath = outputConfiguration[@"name"] + ".jpg";
+        NSString *filePath = [[outputConfiguration[@"name"] stringValue] stringByAppendingPathExtension:@".jpg"];
         NSString *fullPath = [NSString stringWithFormat:@"%@%@", NSTemporaryDirectory(), filePath];
         
         UIImage *scaledImage = (scaleImage)
