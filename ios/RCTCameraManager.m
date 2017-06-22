@@ -839,12 +839,13 @@ RCT_EXPORT_METHOD(hasFlash:(RCTPromiseResolveBlock)resolve reject:(RCTPromiseRej
     dispatch_async(self.continuousCaptureProcessingQueue, ^{
       NSMutableArray *outputPaths = [NSMutableArray new];
       for (NSDictionary *outputConfiguration in self.continuousCaptureOutputConfiguration) {
+        NSString *fileName = [outputConfiguration[@"name"] stringValue];
         CGFloat quality = [outputConfiguration[@"quality"] floatValue];
         CGFloat width = [outputConfiguration[@"width"] floatValue];
         CGFloat height = [outputConfiguration[@"height"] floatValue];
         BOOL scaleImage = (width > 0 && height > 0);
         
-        NSString *filePath = [[outputConfiguration[@"name"] stringValue] stringByAppendingPathExtension:@".jpg"];
+        NSString *filePath = [fileName stringByAppendingPathExtension:@"jpg"];
         NSString *fullPath = [NSString stringWithFormat:@"%@%@", NSTemporaryDirectory(), filePath];
         
         UIImage *scaledImage = (scaleImage)
@@ -856,12 +857,14 @@ RCT_EXPORT_METHOD(hasFlash:(RCTPromiseResolveBlock)resolve reject:(RCTPromiseRej
         [outputPaths addObject:fullPath];
       }
       
-      NSDictionary *event = @{
-        @"target": self.camera.reactTag,
-        @"output": outputPaths
-      };
+      if ([outputPaths count] > 0) {
+        NSDictionary *event = @{
+          @"target": self.camera.reactTag,
+          @"output": outputPaths
+        };
 
-      self.camera.onCaptureOutput(event);
+        self.camera.onCaptureOutput(event);
+      }
     });
   }
 }
