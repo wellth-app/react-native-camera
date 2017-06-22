@@ -837,7 +837,8 @@ RCT_EXPORT_METHOD(hasFlash:(RCTPromiseResolveBlock)resolve reject:(RCTPromiseRej
     CFRelease(sampleBuffer);
     
     dispatch_async(self.continuousCaptureProcessingQueue, ^{
-      NSMutableArray *outputPaths = [NSMutableArray new];
+      // NSMutableArray *outputPaths = [NSMutableArray new];
+      NSMutableDictionary *outputPaths = [NSMutableDictionary new];
       for (NSDictionary *outputConfiguration in self.continuousCaptureOutputConfiguration) {
         NSString *fileName = outputConfiguration[@"name"];
         assert(fileName != nil);
@@ -860,7 +861,7 @@ RCT_EXPORT_METHOD(hasFlash:(RCTPromiseResolveBlock)resolve reject:(RCTPromiseRej
         
         NSData *imageData = UIImageJPEGRepresentation(scaledImage, quality);
         [imageData writeToFile:fullPath atomically:YES];
-        [outputPaths addObject:fullPath];
+        [outputPaths setValue:fullPath forKey:fileName];
       }
       
       if ([outputPaths count] > 0) {
