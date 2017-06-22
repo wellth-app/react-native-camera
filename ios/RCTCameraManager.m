@@ -331,13 +331,13 @@ RCT_CUSTOM_VIEW_PROPERTY(captureAudio, BOOL, RCTCamera) {
     self.continuousCaptureOutputConfiguration = @[
       @{
         @"name": @"fullSize",
-        @"quality": 1.0,
+        @"quality": @1.0,
       },
       @{
         @"name": @"thumbnail",
-        @"quality": 0.8,
-        @"width": @"0.5",
-        @"height": @"0.5",
+        @"quality": @0.8,
+        @"width": @0.5,
+        @"height": @0.5,
       },
     ];
   }
