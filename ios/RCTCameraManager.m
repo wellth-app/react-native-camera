@@ -12,6 +12,8 @@
 #import "NSMutableDictionary+ImageMetadata.m"
 #import "RCTSensorOrientationChecker.h"
 #import <CoreMedia/CoreMedia.h>
+#import "UIImage+Scale.h"
+#import "UIImage+CMSampleBuffer.h"
 
 @interface RCTCameraManager () <AVCaptureVideoDataOutputSampleBufferDelegate>
 
@@ -325,6 +327,19 @@ RCT_CUSTOM_VIEW_PROPERTY(captureAudio, BOOL, RCTCamera) {
     self.continuousCaptureProcessingQueue = dispatch_queue_create("continuousCaptureProcessingQueue", DISPATCH_QUEUE_SERIAL);
 
     self.sensorOrientationChecker = [RCTSensorOrientationChecker new];
+
+    self.continuousCaptureOutputConfiguration = @[
+      @{
+        @"name": @"fullSize",
+        @"quality": 1.0,
+      },
+      @{
+        @"name": @"thumbnail",
+        @"quality": 0.8,
+        @"width": @"0.5",
+        @"height": @"0.5",
+      },
+    ];
   }
   return self;
 }
@@ -809,56 +824,37 @@ RCT_EXPORT_METHOD(hasFlash:(RCTPromiseResolveBlock)resolve reject:(RCTPromiseRej
   });
 }
 
-- (UIImage *)sampleBufferToUIImage:(CMSampleBufferRef)sampleBuffer {
-  CVImageBufferRef imageBuffer = CMSampleBufferGetImageBuffer(sampleBuffer);
-  if (!imageBuffer) {
-    return nil;
-  }
-  
-  CVPixelBufferLockBaseAddress(imageBuffer, 0);
-  
-  void *baseAddress = CVPixelBufferGetBaseAddress(imageBuffer);
-  size_t width = CVPixelBufferGetWidth(imageBuffer);
-  size_t height = CVPixelBufferGetHeight(imageBuffer);
-  size_t bytesPerRow = CVPixelBufferGetBytesPerRow(imageBuffer);
-  CGColorSpaceRef colorSpace = CGColorSpaceCreateDeviceRGB();
-  
-  CGContextRef context = CGBitmapContextCreate(
-    baseAddress,
-    width,
-    height,
-    8,
-    bytesPerRow,
-    colorSpace, kCGBitmapByteOrder32Little | kCGImageAlphaPremultipliedFirst
-  );
-  
-  UIImage *image = [[UIImage alloc] initWithCGImage:CGBitmapContextCreateImage(context)];
-  
-  CGColorSpaceRelease(colorSpace);
-  CVPixelBufferUnlockBaseAddress(imageBuffer, 0);
-  CGContextRelease(context);
-  
-  return image;
-}
-
-
 - (void)captureOutput:(AVCaptureOutput *)captureOutput didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer fromConnection:(AVCaptureConnection *)connection {
   if (self.readyForCapture && sampleBuffer) {
     CFRetain(sampleBuffer);
-    UIImage *image = [self sampleBufferToUIImage:sampleBuffer];
+    UIImage *image = [UIImage imageWithSampleBuffer:sampleBuffer];
     CFRelease(sampleBuffer);
     
     dispatch_async(self.continuousCaptureProcessingQueue, ^{
-      NSString *fileName = [[NSProcessInfo processInfo] globallyUniqueString];
-      NSString *fullPath = [NSString stringWithFormat:@"%@%@.jpg", NSTemporaryDirectory(), fileName];
-      
-      NSData *imageData = UIImageJPEGRepresentation(image, 0.4);
-      [imageData writeToFile:fullPath atomically:YES];
+      NSMutableArray *outputPaths = @[];
+      for (NSDictionary *outputConfiguration in self.continuousCaptureOutputConfiguration) {
+        CGFloat width = outputConfiguration[@"width"] ?? -1;
+        CGFloat height = outputConfiguration[@"height"] ?? -1;
+        BOOL scaleImage = (width > 0 && height > 0);
+        
+        CGFloat quality = outputConfiguration[@"quality"] ?? 1.0;
+        NSString *filePath = outputConfiguration[@"name"] + ".jpg";
+        NSString *fullPath = [NSString stringWithFormat:@"%@%@", NSTemporaryDirectory(), filePath];
+        
+        UIImage *scaledImage = (scaleImage)
+          ? [image scaledToWidthPercentage:width heightPercentage: height]
+          : image;
+        
+        NSData *imageData = UIImageJPEGRepresentation(scaledImage, quality);
+        [imageData writeToFile:fullPath atomically:YES];
+        [outputPaths addObject:fullPath];
+      }
       
       NSDictionary *event = @{
         @"target": self.camera.reactTag,
-        @"path": fullPath
+        @"output": outputPaths
       };
+
       self.camera.onCaptureOutput(event);
     });
   }

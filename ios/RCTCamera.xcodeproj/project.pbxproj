@@ -12,6 +12,8 @@
 		4107014E1ACB732B00C6AA39 /* RCTCameraManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 4107014A1ACB732B00C6AA39 /* RCTCameraManager.m */; };
 		454EBCF41B5082DC00AD0F86 /* NSMutableDictionary+ImageMetadata.m in Sources */ = {isa = PBXBuildFile; fileRef = 454EBCF31B5082DC00AD0F86 /* NSMutableDictionary+ImageMetadata.m */; };
 		9FE592B31CA3CBF500788287 /* RCTSensorOrientationChecker.m in Sources */ = {isa = PBXBuildFile; fileRef = 9FE592B21CA3CBF500788287 /* RCTSensorOrientationChecker.m */; };
+		D019C0741EFC40A700E23219 /* UIImage+Scale.m in Sources */ = {isa = PBXBuildFile; fileRef = D019C0731EFC40A700E23219 /* UIImage+Scale.m */; };
+		D019C0781EFC481500E23219 /* UIImage+CMSampleBuffer.m in Sources */ = {isa = PBXBuildFile; fileRef = D019C0771EFC481500E23219 /* UIImage+CMSampleBuffer.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -37,6 +39,10 @@
 		454EBCF31B5082DC00AD0F86 /* NSMutableDictionary+ImageMetadata.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSMutableDictionary+ImageMetadata.m"; sourceTree = "<group>"; };
 		9FE592B11CA3CBF500788287 /* RCTSensorOrientationChecker.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RCTSensorOrientationChecker.h; sourceTree = "<group>"; };
 		9FE592B21CA3CBF500788287 /* RCTSensorOrientationChecker.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RCTSensorOrientationChecker.m; sourceTree = "<group>"; };
+		D019C0721EFC40A700E23219 /* UIImage+Scale.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIImage+Scale.h"; sourceTree = "<group>"; };
+		D019C0731EFC40A700E23219 /* UIImage+Scale.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIImage+Scale.m"; sourceTree = "<group>"; };
+		D019C0761EFC481500E23219 /* UIImage+CMSampleBuffer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIImage+CMSampleBuffer.h"; sourceTree = "<group>"; };
+		D019C0771EFC481500E23219 /* UIImage+CMSampleBuffer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIImage+CMSampleBuffer.m"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -53,6 +59,10 @@
 		410701241ACB719800C6AA39 = {
 			isa = PBXGroup;
 			children = (
+				D019C0761EFC481500E23219 /* UIImage+CMSampleBuffer.h */,
+				D019C0771EFC481500E23219 /* UIImage+CMSampleBuffer.m */,
+				D019C0721EFC40A700E23219 /* UIImage+Scale.h */,
+				D019C0731EFC40A700E23219 /* UIImage+Scale.m */,
 				9FE592B11CA3CBF500788287 /* RCTSensorOrientationChecker.h */,
 				9FE592B21CA3CBF500788287 /* RCTSensorOrientationChecker.m */,
 				0314E39C1B661A460092D183 /* CameraFocusSquare.m */,
@@ -133,6 +143,8 @@
 				454EBCF41B5082DC00AD0F86 /* NSMutableDictionary+ImageMetadata.m in Sources */,
 				4107014E1ACB732B00C6AA39 /* RCTCameraManager.m in Sources */,
 				4107014D1ACB732B00C6AA39 /* RCTCamera.m in Sources */,
+				D019C0741EFC40A700E23219 /* UIImage+Scale.m in Sources */,
+				D019C0781EFC481500E23219 /* UIImage+CMSampleBuffer.m in Sources */,
 				9FE592B31CA3CBF500788287 /* RCTSensorOrientationChecker.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
