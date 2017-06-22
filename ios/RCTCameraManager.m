@@ -842,7 +842,7 @@ RCT_EXPORT_METHOD(hasFlash:(RCTPromiseResolveBlock)resolve reject:(RCTPromiseRej
         NSString *fileName = [outputConfiguration[@"name"] stringValue];
         CGFloat quality = [outputConfiguration[@"quality"] floatValue];
         if (quality == 0) {
-          quality = 1.0
+          quality = 1.0;
         }
 
         CGFloat width = [outputConfiguration[@"width"] floatValue];
