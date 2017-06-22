@@ -839,7 +839,7 @@ RCT_EXPORT_METHOD(hasFlash:(RCTPromiseResolveBlock)resolve reject:(RCTPromiseRej
     dispatch_async(self.continuousCaptureProcessingQueue, ^{
       NSMutableArray *outputPaths = [NSMutableArray new];
       for (NSDictionary *outputConfiguration in self.continuousCaptureOutputConfiguration) {
-        NSString *fileName = [outputConfiguration[@"name"] stringValue];
+        NSString *fileName = outputConfiguration[@"name"];
         CGFloat quality = [outputConfiguration[@"quality"] floatValue];
         if (quality == 0) {
           quality = 1.0;
