@@ -841,6 +841,10 @@ RCT_EXPORT_METHOD(hasFlash:(RCTPromiseResolveBlock)resolve reject:(RCTPromiseRej
       for (NSDictionary *outputConfiguration in self.continuousCaptureOutputConfiguration) {
         NSString *fileName = [outputConfiguration[@"name"] stringValue];
         CGFloat quality = [outputConfiguration[@"quality"] floatValue];
+        if (quality == 0) {
+          quality = 1.0
+        }
+
         CGFloat width = [outputConfiguration[@"width"] floatValue];
         CGFloat height = [outputConfiguration[@"height"] floatValue];
         BOOL scaleImage = (width > 0 && height > 0);
