@@ -34,6 +34,7 @@ import com.wellthapp.ContinuousRCTCamera.Utils;
 
 import java.io.*;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
@@ -521,9 +522,11 @@ public class RCTCameraModule extends ReactContextBaseJavaModule
         final int positiveIdentificationTimeout = options.hasKey("positiveIdentificationTimeout") ? options.getInt("positiveIdentificationTimeout") : POSITIVE_IDENTIFICATION_TIMEOUT_MS;
         final ReadableArray acceptedTagsArray = options.hasKey("acceptedTags") ? options.getArray("acceptedTags") : null;
         final List<String> acceptedTags = Utils.unpackReadableStringArray(acceptedTagsArray);
+
         final Camera camera = RCTCamera.getInstance().acquireCameraInstance(options.getInt("type"));
 
-        camera.setPreviewCallback(new CameraPreviewCallback(captureInterval, positiveIdentificationTimeout, acceptedTags));
+        Log.d(TAG, "Setting preview callback now!");
+        camera.setPreviewCallback(new CameraPreviewCallback(captureInterval, positiveIdentificationTimeout, acceptedTags, promise));
 
     }
 
