@@ -333,19 +333,6 @@ RCT_CUSTOM_VIEW_PROPERTY(captureAudio, BOOL, RCTCamera) {
     self.continuousCaptureProcessingQueue = dispatch_queue_create("continuousCaptureProcessingQueue", DISPATCH_QUEUE_SERIAL);
 
     self.sensorOrientationChecker = [RCTSensorOrientationChecker new];
-
-    self.continuousCaptureOutputConfiguration = @[
-      @{
-        @"name": @"fullSize",
-        @"quality": @1.0,
-      },
-      @{
-        @"name": @"thumbnail",
-        @"quality": @0.8,
-        @"width": @0.5,
-        @"height": @0.5,
-      },
-    ];
   }
   return self;
 }

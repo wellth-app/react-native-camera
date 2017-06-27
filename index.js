@@ -136,14 +136,16 @@ export default class Camera extends Component {
   }
 
   async componentWillMount() {
-    this._addOnBarCodeReadListener();
+    this._addListeners();
 
     let { captureMode } = convertNativeProps({
       captureMode: this.props.captureMode,
     });
+
     let hasVideoAndAudio =
       this.props.captureAudio &&
       captureMode === Camera.constants.CaptureMode.video;
+
     let check = hasVideoAndAudio
       ? Camera.checkDeviceAuthorizationStatus
       : Camera.checkVideoAuthorizationStatus;
@@ -155,7 +157,7 @@ export default class Camera extends Component {
   }
 
   componentWillUnmount() {
-    this._removeOnBarCodeReadListener();
+    this._removeListeners();
 
     if (this.state.isRecording) {
       this.stopCapture();
@@ -163,11 +165,53 @@ export default class Camera extends Component {
   }
 
   componentWillReceiveProps(newProps) {
-    const { onBarCodeRead } = this.props;
+    const { onBarCodeRead, onCaptureOutput } = this.props;
+
     if (onBarCodeRead !== newProps.onBarCodeRead) {
       this._addOnBarCodeReadListener(newProps);
     }
+
+    if (onCaptureOutput !== newProps.onCaptureOutput) {
+      this._addContinuousCaptureListener(newProps);
+    }
   }
+
+  _addListeners(props) {
+    this._addContinuousCaptureListener(props);
+    this._addOnBarCodeReadListener(props);
+  }
+  _removeListeners(props) {
+    this._removeContinuousCaptureListener(props);
+    this._removeOnBarCodeReadListener(props);
+  }
+
+  _addContinuousCaptureListener(props) {
+    if (Platform.OS === "ios") {
+      return;
+    }
+
+    const { onCaptureOutput } = props || this.props;
+    this._removeContinuousCaptureListener();
+    if (onCaptureOutput) {
+      this.continuousCaptureListener = Platform.select({
+        android: DeviceEventEmitter.addListener(
+          "ContinuousCaptureOutput",
+          this._onContinuousCaptureOutput,
+        ),
+      });
+    }
+  }
+  _removeContinuousCaptureListener() {
+    const listener = this.continuousCaptureListener;
+    if (listener) {
+      listener.remove();
+    }
+  }
+  _onContinuousCaptureOutput = data => {
+    if (this.props.onCaptureOutput) {
+      this.props.onCaptureOutput(data);
+    }
+  };
 
   _addOnBarCodeReadListener(props) {
     const { onBarCodeRead } = props || this.props;
