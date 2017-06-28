@@ -8,6 +8,9 @@ import android.hardware.Camera;
 import android.media.CamcorderProfile;
 import android.util.Log;
 
+import com.wellthapp.ContinuousRCTCamera.CameraPreviewCallback;
+import com.wellthapp.ContinuousRCTCamera.ContinuousCaptureOutputConfigurations;
+
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -26,6 +29,10 @@ public class RCTCamera {
     private int _orientation = -1;
     private int _actualDeviceOrientation = 0;
     private int _adjustedDeviceOrientation = 0;
+    private boolean _continuousCapture = false;
+    private boolean _shouldCapture = false;
+    private ContinuousCaptureOutputConfigurations continuousCaptureOutputConfigurations;
+    private CameraPreviewCallback cameraPreviewCallback = new CameraPreviewCallback(RCTCameraModule.getReactContextSingleton());
 
     public static RCTCamera getInstance() {
         return ourInstance;
@@ -33,7 +40,6 @@ public class RCTCamera {
     public static void createInstance(int deviceOrientation) {
         ourInstance = new RCTCamera(deviceOrientation);
     }
-
 
     public synchronized Camera acquireCameraInstance(int type) {
         if (null == _cameras.get(type) && null != _cameraTypeToIndex.get(type)) {
@@ -158,6 +164,38 @@ public class RCTCamera {
         _orientation = orientation;
         adjustPreviewLayout(RCTCameraModule.RCT_CAMERA_TYPE_FRONT);
         adjustPreviewLayout(RCTCameraModule.RCT_CAMERA_TYPE_BACK);
+    }
+
+    public void setContinuousCapture(final int cameraType, final boolean continuousCapture) {
+        if (_continuousCapture == continuousCapture) {
+            return;
+        }
+        this._continuousCapture = continuousCapture;
+
+        Camera camera = this.acquireCameraInstance(cameraType);
+        if (null == camera) {
+            return;
+        }
+
+        // Add the listener here
+        camera.setPreviewCallback(this.cameraPreviewCallback);
+
+    }
+
+    public void setShouldCapture(final int cameraType, final boolean shouldCapture) {
+        if (_shouldCapture == shouldCapture) {
+            return;
+        }
+        this._shouldCapture = shouldCapture;
+        this.cameraPreviewCallback.setShouldCapture(shouldCapture);
+    }
+
+    public void setContinuousCaptureOutputConfigurations(final ContinuousCaptureOutputConfigurations continuousCaptureOutputConfigurations) {
+        if (this.continuousCaptureOutputConfigurations == continuousCaptureOutputConfigurations) {
+            return;
+        }
+        this.continuousCaptureOutputConfigurations = continuousCaptureOutputConfigurations;
+        this.cameraPreviewCallback.setContinuousCaptureOutputConfigurations(continuousCaptureOutputConfigurations);
     }
 
     public boolean isBarcodeScannerEnabled() {
