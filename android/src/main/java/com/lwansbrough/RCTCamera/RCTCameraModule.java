@@ -23,18 +23,16 @@ import android.view.Surface;
 import com.facebook.react.bridge.LifecycleEventListener;
 import com.facebook.react.bridge.Promise;
 import com.facebook.react.bridge.ReactApplicationContext;
+import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.bridge.ReactMethod;
-import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.bridge.WritableNativeMap;
 import com.wellthapp.ContinuousRCTCamera.CameraPreviewCallback;
-import com.wellthapp.ContinuousRCTCamera.Utils;
 
 import java.io.*;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
@@ -43,8 +41,8 @@ import java.util.Map;
 
 import javax.annotation.Nullable;
 
-public class RCTCameraModule extends ReactContextBaseJavaModule
-    implements MediaRecorder.OnInfoListener, MediaRecorder.OnErrorListener, LifecycleEventListener {
+public class RCTCameraModule extends ReactContextBaseJavaModule implements MediaRecorder.OnInfoListener, MediaRecorder.OnErrorListener, LifecycleEventListener {
+
     private static final String TAG = "RCTCameraModule";
 
     public static final int RCT_CAMERA_ASPECT_FILL = 0;
@@ -52,6 +50,7 @@ public class RCTCameraModule extends ReactContextBaseJavaModule
     public static final int RCT_CAMERA_ASPECT_STRETCH = 2;
     public static final int RCT_CAMERA_CAPTURE_MODE_STILL = 0;
     public static final int RCT_CAMERA_CAPTURE_MODE_VIDEO = 1;
+    public static final int RCT_CAMERA_CAPTURE_MODE_CONTINUOUS = 2;
     public static final int RCT_CAMERA_CAPTURE_TARGET_MEMORY = 0;
     public static final int RCT_CAMERA_CAPTURE_TARGET_DISK = 1;
     public static final int RCT_CAMERA_CAPTURE_TARGET_CAMERA_ROLL = 2;
@@ -79,7 +78,6 @@ public class RCTCameraModule extends ReactContextBaseJavaModule
     public static final int MEDIA_TYPE_IMAGE = 1;
     public static final int MEDIA_TYPE_VIDEO = 2;
 
-    private static final int DEFAULT_INTERVAL_MS = 500;
     private static final int POSITIVE_IDENTIFICATION_TIMEOUT_MS = 20000;
 
     private static ReactApplicationContext _reactContext;
@@ -512,21 +510,14 @@ public class RCTCameraModule extends ReactContextBaseJavaModule
         }
     }
 
-
-
     @ReactMethod
     public void captureContinuous(final ReadableMap options, final Promise promise) {
-
-        // Determine how often an image should be captured
-        final int captureInterval = options.hasKey("interval") ? options.getInt("interval") : DEFAULT_INTERVAL_MS;
-        final int positiveIdentificationTimeout = options.hasKey("positiveIdentificationTimeout") ? options.getInt("positiveIdentificationTimeout") : POSITIVE_IDENTIFICATION_TIMEOUT_MS;
-        final ReadableArray acceptedTagsArray = options.hasKey("acceptedTags") ? options.getArray("acceptedTags") : null;
-        final List<String> acceptedTags = Utils.unpackReadableStringArray(acceptedTagsArray);
-
         final Camera camera = RCTCamera.getInstance().acquireCameraInstance(options.getInt("type"));
 
         Log.d(TAG, "Setting preview callback now!");
-        camera.setPreviewCallback(new CameraPreviewCallback(captureInterval, positiveIdentificationTimeout, acceptedTags, promise));
+        ReactContext reactContext = this.getReactApplicationContext();
+
+        camera.setPreviewCallback(new CameraPreviewCallback(reactContext));
 
     }
 
