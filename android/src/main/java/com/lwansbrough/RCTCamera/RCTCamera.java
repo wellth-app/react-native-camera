@@ -4,69 +4,39 @@
 
 package com.lwansbrough.RCTCamera;
 
-import android.graphics.ImageFormat;
-import android.graphics.Rect;
-import android.graphics.YuvImage;
 import android.hardware.Camera;
 import android.media.CamcorderProfile;
-import android.os.Environment;
 import android.util.Log;
 
-import com.facebook.react.bridge.Arguments;
-import com.facebook.react.bridge.ReactContext;
-import com.facebook.react.bridge.WritableMap;
-import com.facebook.react.modules.core.DeviceEventManagerModule;
+import com.wellthapp.ContinuousRCTCamera.CameraPreviewCallback;
+import com.wellthapp.ContinuousRCTCamera.ContinuousCaptureOutputConfigurations;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.OutputStream;
-import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.lang.Math;
 
 public class RCTCamera {
-
-    static File getOutputFile() {
-        File storageDir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES);
-
-        // Create the storage directory if it does not exist
-        if (!storageDir.exists()) {
-            if (!storageDir.mkdirs()) {
-                Log.e("RCTCamera", "failed to create directory:" + storageDir.getAbsolutePath());
-                return null;
-            }
-        }
-        // Create a media file name
-        String fileName = String.format("%s", new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date()));
-        fileName = String.format("IMG_%s.jpg", fileName);
-        return new File(String.format("%s%s%s", storageDir.getPath(), File.separator, fileName));
-    }
-
-    private static final Resolution RESOLUTION_480P = new Resolution(853, 480); // 480p shoots for a 16:9 HD aspect ratio, but can otherwise fall back/down to any other supported camera sizes, such as 800x480 or 720x480, if (any) present. See getSupportedPictureSizes/getSupportedVideoSizes below.
-    private static final Resolution RESOLUTION_720P = new Resolution(1280, 720);
-    private static final Resolution RESOLUTION_1080P = new Resolution(1920, 1080);
-
     private static RCTCamera ourInstance;
-
     private final HashMap<Integer, CameraInfoWrapper> _cameraInfos;
     private final HashMap<Integer, Integer> _cameraTypeToIndex;
     private final Map<Number, Camera> _cameras;
-
+    private static final Resolution RESOLUTION_480P = new Resolution(853, 480); // 480p shoots for a 16:9 HD aspect ratio, but can otherwise fall back/down to any other supported camera sizes, such as 800x480 or 720x480, if (any) present. See getSupportedPictureSizes/getSupportedVideoSizes below.
+    private static final Resolution RESOLUTION_720P = new Resolution(1280, 720);
+    private static final Resolution RESOLUTION_1080P = new Resolution(1920, 1080);
     private boolean _barcodeScannerEnabled = false;
     private List<String> _barCodeTypes = null;
     private int _orientation = -1;
     private int _actualDeviceOrientation = 0;
     private int _adjustedDeviceOrientation = 0;
+    private boolean _continuousCapture = false;
+    private boolean _shouldCapture = false;
+    private ContinuousCaptureOutputConfigurations continuousCaptureOutputConfigurations;
+    private CameraPreviewCallback cameraPreviewCallback = new CameraPreviewCallback(RCTCameraModule.getReactContextSingleton());
 
     public static RCTCamera getInstance() {
         return ourInstance;
     }
-
     public static void createInstance(int deviceOrientation) {
         ourInstance = new RCTCamera(deviceOrientation);
     }
@@ -196,6 +166,38 @@ public class RCTCamera {
         adjustPreviewLayout(RCTCameraModule.RCT_CAMERA_TYPE_BACK);
     }
 
+    public void setContinuousCapture(final int cameraType, final boolean continuousCapture) {
+        if (_continuousCapture == continuousCapture) {
+            return;
+        }
+        this._continuousCapture = continuousCapture;
+
+        Camera camera = this.acquireCameraInstance(cameraType);
+        if (null == camera) {
+            return;
+        }
+
+        // Add the listener here
+        camera.setPreviewCallback(this.cameraPreviewCallback);
+
+    }
+
+    public void setShouldCapture(final int cameraType, final boolean shouldCapture) {
+        if (_shouldCapture == shouldCapture) {
+            return;
+        }
+        this._shouldCapture = shouldCapture;
+        this.cameraPreviewCallback.setShouldCapture(shouldCapture);
+    }
+
+    public void setContinuousCaptureOutputConfigurations(final ContinuousCaptureOutputConfigurations continuousCaptureOutputConfigurations) {
+        if (this.continuousCaptureOutputConfigurations == continuousCaptureOutputConfigurations) {
+            return;
+        }
+        this.continuousCaptureOutputConfigurations = continuousCaptureOutputConfigurations;
+        this.cameraPreviewCallback.setContinuousCaptureOutputConfigurations(continuousCaptureOutputConfigurations);
+    }
+
     public boolean isBarcodeScannerEnabled() {
       return _barcodeScannerEnabled;
     }
@@ -281,54 +283,6 @@ public class RCTCamera {
             parameters.setPictureSize(pictureSize.width, pictureSize.height);
             camera.setParameters(parameters);
         }
-    }
-
-    public void setRepeatingCapture(int cameraType) {
-        Camera camera = this.acquireCameraInstance(cameraType);
-        if (camera == null) {
-            return;
-        }
-
-        final int previewFrameRate = camera.getParameters().getPreviewFrameRate();
-        final Camera.Size previewSize = camera.getParameters().getPreviewSize();
-
-        final ReactContext reactContext = RCTCameraModule.getReactContextSingleton();
-
-        camera.setPreviewCallback(new Camera.PreviewCallback() {
-            @Override
-            public void onPreviewFrame(byte[] data, Camera camera) {
-
-                Camera.Parameters parameters = camera.getParameters();
-                final int imageFormat = parameters.getPreviewFormat();
-                if (imageFormat == ImageFormat.NV21) {
-                    Rect rect = new Rect(0, 0, previewSize.width, previewSize.height);
-                    YuvImage img = new YuvImage(data, ImageFormat.NV21, previewSize.width, previewSize.height, null);
-                    OutputStream outStream = null;
-                    try
-                    {
-                        final File outputFile = getOutputFile();
-                        outStream = new FileOutputStream(outputFile);
-                        img.compressToJpeg(rect, 100, outStream);
-                        outStream.flush();
-                        outStream.close();
-
-                        Log.d("RCTCamera", "Emitting file capture event = " + outputFile.getAbsolutePath());
-                        WritableMap params = Arguments.createMap();
-                        params.putString("path", outputFile.getAbsolutePath());
-                        reactContext.getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class).emit("CaptureEvent", params);
-
-
-                    }
-                    catch (FileNotFoundException e) {
-                        e.printStackTrace();
-                    }
-                    catch (IOException e) {
-                        e.printStackTrace();
-                    }
-                }
-
-            }
-        });
     }
 
     public CamcorderProfile setCaptureVideoQuality(int cameraType, String captureQuality) {

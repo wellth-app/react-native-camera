@@ -249,6 +249,26 @@ export default class Camera extends Component {
     }
   };
 
+  captureContinuous() {
+    const props = convertNativeProps(this.props);
+    const options = {
+      audio: props.captureAudio,
+      barCodeTypes: props.barCodeTypes,
+      mode: props.captureMode,
+      playSoundOnCapture: props.playSoundOnCapture,
+      target: props.captureTarget,
+      quality: props.captureQuality,
+      type: props.type,
+      title: '',
+      description: '',
+      mirrorImage: props.mirrorImage,
+      fixOrientation: props.fixOrientation,
+      ...options
+    };
+
+    return CameraManager.captureContinuous(options);
+  }
+
   capture(options) {
     const props = convertNativeProps(this.props);
     options = {

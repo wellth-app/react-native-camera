@@ -1,15 +1,18 @@
 package com.lwansbrough.RCTCamera;
 
-import android.support.annotation.Nullable;
-
 import com.facebook.react.bridge.ReadableArray;
+import com.facebook.react.bridge.ReadableMap;
+import com.facebook.react.bridge.ReadableType;
 import com.facebook.react.uimanager.*;
 import com.facebook.react.uimanager.annotations.ReactProp;
+import com.wellthapp.ContinuousRCTCamera.ContinuousCaptureOutputConfiguration;
+import com.wellthapp.ContinuousRCTCamera.ContinuousCaptureOutputConfigurations;
 
 import java.util.List;
 import java.util.ArrayList;
 
 public class RCTCameraViewManager extends ViewGroupManager<RCTCameraView> {
+
     private static final String REACT_CLASS = "RCTCamera";
 
     @Override
@@ -86,4 +89,42 @@ public class RCTCameraViewManager extends ViewGroupManager<RCTCameraView> {
         }
         view.setBarCodeTypes(result);
     }
+
+    @ReactProp(name = "shouldCapture")
+    public void setShouldCapture(RCTCameraView view, boolean shouldCapture) {
+        view.setShouldCapture(shouldCapture);
+    }
+
+    @ReactProp(name = "continuousCapture")
+    public void setContinuousCapture(RCTCameraView view, boolean continuousCapture) {
+        view.setContinuousCapture(continuousCapture);
+    }
+
+    @ReactProp(name = "continuousCaptureOutputConfiguration")
+    public void continuousCaptureOutputConfiguration(RCTCameraView view, ReadableArray continuousCaptureOutputConfigurations) {
+
+        final ContinuousCaptureOutputConfigurations result = new ContinuousCaptureOutputConfigurations();
+
+        if (continuousCaptureOutputConfigurations != null) {
+            final int arraySize = continuousCaptureOutputConfigurations.size();
+            for (int i = 0; i < arraySize; i++) {
+                // Get the type of the current object so we know how to pull it out
+                final ReadableType itemType = continuousCaptureOutputConfigurations.getType(i);
+
+                // Really we only care about Map types
+                if (itemType.equals(ReadableType.Map)) {
+                    final ReadableMap item = continuousCaptureOutputConfigurations.getMap(i);
+                    final String name = item.getString("name");
+                    final double height = item.getDouble("height");
+                    final double width = item.getDouble("width");
+                    final double quality = item.getDouble("quality");
+                    result.addConfiguration(new ContinuousCaptureOutputConfiguration(name, height, width, quality));
+                }
+            }
+
+            view.setContinuousCaptureOutputConfigurations(result);
+
+        }
+    }
+
 }
