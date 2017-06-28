@@ -11,6 +11,8 @@ import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.view.View;
 
+import com.wellthapp.ContinuousRCTCamera.ContinuousCaptureOutputConfigurations;
+
 import java.util.List;
 
 public class RCTCameraView extends ViewGroup {
@@ -121,6 +123,18 @@ public class RCTCameraView extends ViewGroup {
 
     public void setBarCodeTypes(List<String> types) {
         RCTCamera.getInstance().setBarCodeTypes(types);
+    }
+
+    public void setShouldCapture(boolean shouldCapture) {
+        this._viewFinder.setShouldCapture(shouldCapture);
+    }
+
+    public void setContinuousCapture(boolean continuousCapture) {
+        this._viewFinder.setContinuousCapture(continuousCapture);
+    }
+
+    public void setContinuousCaptureOutputConfigurations(final ContinuousCaptureOutputConfigurations continuousCaptureOutputConfigurations) {
+        this._viewFinder.setContinuousCaptureOutputConfigurations(continuousCaptureOutputConfigurations);
     }
 
     private boolean setActualDeviceOrientation(Context context) {

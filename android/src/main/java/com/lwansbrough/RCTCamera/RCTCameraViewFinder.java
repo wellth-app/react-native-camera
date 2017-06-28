@@ -29,6 +29,7 @@ import com.google.zxing.MultiFormatReader;
 import com.google.zxing.PlanarYUVLuminanceSource;
 import com.google.zxing.Result;
 import com.google.zxing.common.HybridBinarizer;
+import com.wellthapp.ContinuousRCTCamera.ContinuousCaptureOutputConfigurations;
 
 class RCTCameraViewFinder extends TextureView implements TextureView.SurfaceTextureListener, Camera.PreviewCallback {
     private int _cameraType;
@@ -116,6 +117,18 @@ class RCTCameraViewFinder extends TextureView implements TextureView.SurfaceText
 
     public void setFlashMode(int flashMode) {
         RCTCamera.getInstance().setFlashMode(_cameraType, flashMode);
+    }
+
+    public void setContinuousCapture(final boolean continuousCapture) {
+        RCTCamera.getInstance().setContinuousCapture(_cameraType, continuousCapture);
+    }
+
+    public void setShouldCapture(final boolean shouldCapture) {
+        RCTCamera.getInstance().setShouldCapture(_cameraType, shouldCapture);
+    }
+
+    public void setContinuousCaptureOutputConfigurations(final ContinuousCaptureOutputConfigurations continuousCaptureOutputConfigurations) {
+        RCTCamera.getInstance().setContinuousCaptureOutputConfigurations(continuousCaptureOutputConfigurations);
     }
 
     private void startPreview() {
