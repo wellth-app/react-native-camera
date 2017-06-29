@@ -828,7 +828,7 @@ RCT_EXPORT_METHOD(hasFlash:(RCTPromiseResolveBlock)resolve reject:(RCTPromiseRej
 
 - (void)captureOutput:(AVCaptureOutput *)captureOutput didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer fromConnection:(AVCaptureConnection *)connection {
   if (self.camera && self.readyForCapture && sampleBuffer && [self.continuousCaptureOutputConfiguration count] > 0) {
-    self.readyForCapture = false
+    self.readyForCapture = false;
     CFRetain(sampleBuffer);
     UIImage *image = [UIImage imageWithSampleBuffer:sampleBuffer];
     CFRelease(sampleBuffer);
