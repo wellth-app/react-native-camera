@@ -95,6 +95,7 @@ export default class Camera extends Component {
     type: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
 
     continuousCapture: PropTypes.bool,
+    continuousCaptureOutputConfiguration: PropTypes.array,
     readyForCapture: PropTypes.bool,
     onCaptureOutput: PropTypes.func,
   };
@@ -259,11 +260,11 @@ export default class Camera extends Component {
       target: props.captureTarget,
       quality: props.captureQuality,
       type: props.type,
-      title: '',
-      description: '',
+      title: "",
+      description: "",
       mirrorImage: props.mirrorImage,
       fixOrientation: props.fixOrientation,
-      ...options
+      ...options,
     };
 
     return CameraManager.captureContinuous(options);
@@ -287,9 +288,8 @@ export default class Camera extends Component {
     };
 
     if (options.mode === Camera.constants.CaptureMode.video) {
-      options.totalSeconds = options.totalSeconds > -1
-        ? options.totalSeconds
-        : -1;
+      options.totalSeconds =
+        options.totalSeconds > -1 ? options.totalSeconds : -1;
       options.preferredTimeScale = options.preferredTimeScale || 30;
       this.setState({ isRecording: true });
     }
