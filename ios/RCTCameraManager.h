@@ -80,10 +80,6 @@ typedef NS_ENUM(NSInteger, RCTCameraTorchMode) {
 @property(nonatomic, assign) BOOL readyForCapture;
 @property(nonatomic, strong) NSArray *continuousCaptureOutputConfiguration;
 
-/// Video device output used during continuous capture.
-@property(nonatomic, strong) AVCaptureVideoDataOutput *videoDeviceOutput;
-@property(nonatomic, strong) dispatch_queue_t videoOutputQueue;
-
 - (void)changeOrientation:(NSInteger)orientation;
 - (AVCaptureDevice *)deviceWithMediaType:(NSString *)mediaType preferringPosition:(AVCaptureDevicePosition)position;
 

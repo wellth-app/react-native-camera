@@ -21,6 +21,10 @@
 @property (assign, nonatomic) NSInteger* flashMode;
 @property (nonatomic, strong) dispatch_queue_t continuousCaptureProcessingQueue;
 
+/// Video device output used during continuous capture.
+@property(nonatomic, strong) AVCaptureVideoDataOutput *videoDeviceOutput;
+@property(nonatomic, strong) dispatch_queue_t videoOutputQueue;
+
 @end
 
 @implementation RCTCameraManager
@@ -139,6 +143,10 @@ RCT_EXPORT_VIEW_PROPERTY(defaultOnFocusComponent, BOOL);
 RCT_EXPORT_VIEW_PROPERTY(onFocusChanged, BOOL);
 RCT_EXPORT_VIEW_PROPERTY(onZoomChanged, BOOL);
 RCT_EXPORT_VIEW_PROPERTY(onCaptureOutput, RCTDirectEventBlock);
+
+RCT_CUSTOM_VIEW_PROPERTy(continuousCaptureOutputConfiguration, NSArray, RCTCamera) {
+  self.continuousCaptureOutputConfiguration = [RCTConvert NSArray:json];
+}
 
 RCT_CUSTOM_VIEW_PROPERTY(continuousCapture, BOOL, RCTCamera) {
   self.continuousCapture = [RCTConvert BOOL:json];
