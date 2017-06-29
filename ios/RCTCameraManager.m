@@ -455,7 +455,7 @@ RCT_EXPORT_METHOD(hasFlash:(RCTPromiseResolveBlock)resolve reject:(RCTPromiseRej
       // Only a video data output and connection need to be configured for continuous capture.
       AVCaptureVideoDataOutput *videoOutput = [[AVCaptureVideoDataOutput alloc] init];
       if ([self.session canAddOutput:videoOutput]) {
-        videoOutput.videoSettings = @{(id)kCVPixelBufferPixelFormatTypeKey: [NSNumber numberWithUnsignedInt:kCVPixelFormatType_32ARGB]};
+        videoOutput.videoSettings = @{(id)kCVPixelBufferPixelFormatTypeKey: [NSNumber numberWithUnsignedInt:kCVPixelFormatType_32BGRA]};
         [videoOutput setSampleBufferDelegate:self queue:self.videoOutputQueue];
         [self.session addOutput:videoOutput];
         self.videoDeviceOutput = videoOutput;
