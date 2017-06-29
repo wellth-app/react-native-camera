@@ -144,7 +144,7 @@ RCT_EXPORT_VIEW_PROPERTY(onFocusChanged, BOOL);
 RCT_EXPORT_VIEW_PROPERTY(onZoomChanged, BOOL);
 RCT_EXPORT_VIEW_PROPERTY(onCaptureOutput, RCTDirectEventBlock);
 
-RCT_CUSTOM_VIEW_PROPERTy(continuousCaptureOutputConfiguration, NSArray, RCTCamera) {
+RCT_CUSTOM_VIEW_PROPERTY(continuousCaptureOutputConfiguration, NSArray, RCTCamera) {
   self.continuousCaptureOutputConfiguration = [RCTConvert NSArray:json];
 }
 
