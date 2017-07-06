@@ -833,13 +833,16 @@ RCT_EXPORT_METHOD(hasFlash:(RCTPromiseResolveBlock)resolve reject:(RCTPromiseRej
     UIImage *image = [UIImage imageWithSampleBuffer:sampleBuffer];
     CFRelease(sampleBuffer);
     
+    __block NSNumber *reactTag = self.camera.reactTag;
+    __block NSArray *outputFormats = self.continuousCaptureOutputConfiguration;
+    __block RCTDirectEventBlock captureOutput = self.camera.onCaptureOutput;
     dispatch_async(self.continuousCaptureProcessingQueue, ^{
-      // NSMutableArray *outputPaths = [NSMutableArray new];
       NSMutableDictionary *outputPaths = [NSMutableDictionary new];
-      for (NSDictionary *outputConfiguration in self.continuousCaptureOutputConfiguration) {
+      for (NSDictionary *outputConfiguration in outputFormats) {
         NSString *fileName = outputConfiguration[@"name"];
         assert(fileName != nil);
 
+        BOOL base64 = [outputConfiguration[@"base64Output"] boolValue];
         CGFloat quality = [outputConfiguration[@"quality"] floatValue];
         if (quality == 0) {
           quality = 1.0;
@@ -857,17 +860,21 @@ RCT_EXPORT_METHOD(hasFlash:(RCTPromiseResolveBlock)resolve reject:(RCTPromiseRej
           : image;
         
         NSData *imageData = UIImageJPEGRepresentation(scaledImage, quality);
-        [[imageData base64EncodedDataWithOptions:0] writeToFile:fullPath atomically:YES];
+        if (base64) {
+          imageData = [imageData base64EncodedDataWithOptions:0]
+        }
+        
+        [imageData writeToFile:fullPath atomically:YES];
         [outputPaths setValue:fullPath forKey:fileName];
       }
       
       if ([outputPaths count] > 0) {
         NSDictionary *event = @{
-          @"target": self.camera.reactTag,
+          @"target": reactTag,
           @"output": outputPaths
         };
 
-        self.camera.onCaptureOutput(event);
+        captureOutput(event);
       }
     });
   }
