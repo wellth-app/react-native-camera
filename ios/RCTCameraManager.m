@@ -861,7 +861,7 @@ RCT_EXPORT_METHOD(hasFlash:(RCTPromiseResolveBlock)resolve reject:(RCTPromiseRej
         
         NSData *imageData = UIImageJPEGRepresentation(scaledImage, quality);
         if (base64) {
-          imageData = [imageData base64EncodedDataWithOptions:0]
+          imageData = [imageData base64EncodedDataWithOptions:0];
         }
         
         [imageData writeToFile:fullPath atomically:YES];
