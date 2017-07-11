@@ -18,7 +18,8 @@ public class ContinuousCaptureOutputConfigurations {
     }
 
     public ContinuousCaptureOutputConfigurations(final ContinuousCaptureOutputConfiguration...configurations) {
-        Collections.copy(continuousCaptureOutputConfigurationList, Arrays.asList(configurations));
+        this.continuousCaptureOutputConfigurationList.clear();
+        this.continuousCaptureOutputConfigurationList.addAll(Arrays.asList(configurations));
     }
 
     public ContinuousCaptureOutputConfiguration getConfiguration(final int index) {
