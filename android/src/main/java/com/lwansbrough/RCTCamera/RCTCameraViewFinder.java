@@ -123,8 +123,8 @@ class RCTCameraViewFinder extends TextureView implements TextureView.SurfaceText
         RCTCamera.getInstance().setContinuousCapture(_cameraType, continuousCapture);
     }
 
-    public void setShouldCapture(final boolean shouldCapture) {
-        RCTCamera.getInstance().setShouldCapture(_cameraType, shouldCapture);
+    public void setReadyForCapture(final boolean shouldCapture) {
+        RCTCamera.getInstance().setReadyForCapture(_cameraType, shouldCapture);
     }
 
     public void setContinuousCaptureOutputConfigurations(final ContinuousCaptureOutputConfigurations continuousCaptureOutputConfigurations) {

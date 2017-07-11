@@ -91,8 +91,8 @@ public class RCTCameraViewManager extends ViewGroupManager<RCTCameraView> {
     }
 
     @ReactProp(name = "shouldCapture")
-    public void setShouldCapture(RCTCameraView view, boolean shouldCapture) {
-        view.setShouldCapture(shouldCapture);
+    public void setReadyForCapture(RCTCameraView view, boolean shouldCapture) {
+        view.setReadyForCapture(shouldCapture);
     }
 
     @ReactProp(name = "continuousCapture")

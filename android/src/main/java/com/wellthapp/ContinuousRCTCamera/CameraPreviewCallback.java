@@ -49,7 +49,7 @@ public class CameraPreviewCallback implements Camera.PreviewCallback {
         }
     }
 
-    public final void setShouldCapture(final boolean shouldCapture) {
+    public final void setReadyForCapture(final boolean shouldCapture) {
         synchronized (this) {
             this.shouldCapture = shouldCapture;
         }

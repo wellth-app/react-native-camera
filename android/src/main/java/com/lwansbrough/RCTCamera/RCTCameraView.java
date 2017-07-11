@@ -125,8 +125,8 @@ public class RCTCameraView extends ViewGroup {
         RCTCamera.getInstance().setBarCodeTypes(types);
     }
 
-    public void setShouldCapture(boolean shouldCapture) {
-        this._viewFinder.setShouldCapture(shouldCapture);
+    public void setReadyForCapture(boolean shouldCapture) {
+        this._viewFinder.setReadyForCapture(shouldCapture);
     }
 
     public void setContinuousCapture(boolean continuousCapture) {

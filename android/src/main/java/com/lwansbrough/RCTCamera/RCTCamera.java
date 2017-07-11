@@ -182,12 +182,12 @@ public class RCTCamera {
 
     }
 
-    public void setShouldCapture(final int cameraType, final boolean shouldCapture) {
+    public void setReadyForCapture(final int cameraType, final boolean shouldCapture) {
         if (_shouldCapture == shouldCapture) {
             return;
         }
         this._shouldCapture = shouldCapture;
-        this.cameraPreviewCallback.setShouldCapture(shouldCapture);
+        this.cameraPreviewCallback.setReadyForCapture(shouldCapture);
     }
 
     public void setContinuousCaptureOutputConfigurations(final ContinuousCaptureOutputConfigurations continuousCaptureOutputConfigurations) {
