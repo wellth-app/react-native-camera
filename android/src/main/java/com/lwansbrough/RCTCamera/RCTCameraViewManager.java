@@ -90,7 +90,7 @@ public class RCTCameraViewManager extends ViewGroupManager<RCTCameraView> {
         view.setBarCodeTypes(result);
     }
 
-    @ReactProp(name = "shouldCapture")
+    @ReactProp(name = "readyForCapture")
     public void setReadyForCapture(RCTCameraView view, boolean shouldCapture) {
         view.setReadyForCapture(shouldCapture);
     }
