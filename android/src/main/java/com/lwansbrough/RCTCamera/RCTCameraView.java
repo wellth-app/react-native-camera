@@ -25,6 +25,8 @@ public class RCTCameraView extends ViewGroup {
     private String _captureQuality = "high";
     private int _torchMode = -1;
     private int _flashMode = -1;
+    private boolean continuousCapture;
+
 
     public RCTCameraView(Context context) {
         super(context);
@@ -126,15 +128,22 @@ public class RCTCameraView extends ViewGroup {
     }
 
     public void setReadyForCapture(boolean shouldCapture) {
-        this._viewFinder.setReadyForCapture(shouldCapture);
+        if (this._viewFinder != null) {
+            this._viewFinder.setReadyForCapture(shouldCapture);
+        }
     }
 
     public void setContinuousCapture(boolean continuousCapture) {
-        this._viewFinder.setContinuousCapture(continuousCapture);
+        this.continuousCapture = continuousCapture;
+        if (this._viewFinder != null) {
+            this._viewFinder.setContinuousCapture(continuousCapture);
+        }
     }
 
     public void setContinuousCaptureOutputConfigurations(final ContinuousCaptureOutputConfigurations continuousCaptureOutputConfigurations) {
-        this._viewFinder.setContinuousCaptureOutputConfigurations(continuousCaptureOutputConfigurations);
+        if (this._viewFinder != null) {
+            this._viewFinder.setContinuousCaptureOutputConfigurations(continuousCaptureOutputConfigurations);
+        }
     }
 
     private boolean setActualDeviceOrientation(Context context) {
