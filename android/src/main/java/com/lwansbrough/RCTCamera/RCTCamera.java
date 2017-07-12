@@ -50,16 +50,14 @@ public class RCTCamera {
         if (null == _cameras.get(type) && null != _cameraTypeToIndex.get(type)) {
             try {
                 Camera camera = Camera.open(_cameraTypeToIndex.get(type));
+                camera.setPreviewCallback(cameraPreviewCallback);
+                Log.d("RCTCamera", "setPreviewCallback is being called");
+
                 _cameras.put(type, camera);
                 adjustPreviewLayout(type);
             } catch (Exception e) {
                 Log.e("RCTCamera", "acquireCameraInstance failed", e);
             }
-        }
-
-        Camera c = _cameras.get(type);
-        if (c != null) {
-            c.setPreviewCallback(cameraPreviewCallback);
         }
         return _cameras.get(type);
     }
