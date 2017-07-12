@@ -30,6 +30,7 @@ import com.google.zxing.MultiFormatReader;
 import com.google.zxing.PlanarYUVLuminanceSource;
 import com.google.zxing.Result;
 import com.google.zxing.common.HybridBinarizer;
+import com.wellthapp.ContinuousRCTCamera.CameraPreviewCallback;
 import com.wellthapp.ContinuousRCTCamera.ContinuousCaptureOutputConfigurations;
 
 class RCTCameraViewFinder extends TextureView implements TextureView.SurfaceTextureListener, Camera.PreviewCallback {
@@ -45,6 +46,7 @@ class RCTCameraViewFinder extends TextureView implements TextureView.SurfaceText
     private boolean _isStopping;
     private Camera _camera;
     private float mFingerSpacing;
+    private CameraPreviewCallback cameraPreviewCallback = RCTCamera.getCameraPreviewCallback();
 
     // concurrency lock for barcode scanner to avoid flooding the runtime
     public static volatile boolean barcodeScannerTaskLock = false;
@@ -306,6 +308,7 @@ class RCTCameraViewFinder extends TextureView implements TextureView.SurfaceText
             RCTCameraViewFinder.barcodeScannerTaskLock = true;
             new ReaderAsyncTask(camera, data).execute();
         }
+        cameraPreviewCallback.onPreviewFrame(data, camera);
     }
 
     private class ReaderAsyncTask extends AsyncTask<Void, Void, Void> {

@@ -20,6 +20,9 @@ public class RCTCamera {
 
     private static CameraPreviewCallback cameraPreviewCallback = new CameraPreviewCallback(RCTCameraModule.getReactContextSingleton());
 
+    public static CameraPreviewCallback getCameraPreviewCallback() {
+        return cameraPreviewCallback;
+    }
 
     public static final String TAG = "RCTCamera";
 
