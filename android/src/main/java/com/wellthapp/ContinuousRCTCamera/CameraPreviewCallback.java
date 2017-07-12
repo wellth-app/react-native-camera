@@ -55,6 +55,7 @@ public class CameraPreviewCallback implements Camera.PreviewCallback {
     }
 
     public final void setReadyForCapture(final boolean shouldCapture) {
+        Log.d(TAG, "setReadyForCapture() --> Setting readyForCapture = " + shouldCapture);
         synchronized (this) {
             this.readyForCapture = shouldCapture;
         }

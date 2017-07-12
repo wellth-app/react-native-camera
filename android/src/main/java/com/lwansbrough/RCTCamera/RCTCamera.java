@@ -17,6 +17,9 @@ import java.util.Map;
 import java.lang.Math;
 
 public class RCTCamera {
+
+    public static final String TAG = "RCTCamera";
+
     private static RCTCamera ourInstance;
     private final HashMap<Integer, CameraInfoWrapper> _cameraInfos;
     private final HashMap<Integer, Integer> _cameraTypeToIndex;
@@ -30,7 +33,7 @@ public class RCTCamera {
     private int _actualDeviceOrientation = 0;
     private int _adjustedDeviceOrientation = 0;
     private boolean _continuousCapture = false;
-    private boolean _shouldCapture = false;
+    private boolean _readyForCapture = false;
     private ContinuousCaptureOutputConfigurations continuousCaptureOutputConfigurations;
     private CameraPreviewCallback cameraPreviewCallback = new CameraPreviewCallback(RCTCameraModule.getReactContextSingleton());
 
@@ -183,10 +186,8 @@ public class RCTCamera {
     }
 
     public void setReadyForCapture(final int cameraType, final boolean shouldCapture) {
-        if (_shouldCapture == shouldCapture) {
-            return;
-        }
-        this._shouldCapture = shouldCapture;
+        Log.d(TAG, "setReadyForCapture() --> shouldCapture = " + shouldCapture);
+        this._readyForCapture = shouldCapture;
         this.cameraPreviewCallback.setReadyForCapture(shouldCapture);
     }
 

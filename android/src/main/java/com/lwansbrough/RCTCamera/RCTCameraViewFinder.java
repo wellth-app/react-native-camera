@@ -8,6 +8,7 @@ import android.content.Context;
 import android.graphics.Rect;
 import android.graphics.SurfaceTexture;
 import android.hardware.Camera;
+import android.util.Log;
 import android.view.MotionEvent;
 import android.view.TextureView;
 import android.os.AsyncTask;
@@ -32,6 +33,9 @@ import com.google.zxing.common.HybridBinarizer;
 import com.wellthapp.ContinuousRCTCamera.ContinuousCaptureOutputConfigurations;
 
 class RCTCameraViewFinder extends TextureView implements TextureView.SurfaceTextureListener, Camera.PreviewCallback {
+
+    public static final String TAG = "RCTCameraViewFinder";
+
     private int _cameraType;
     private int _captureMode;
     private SurfaceTexture _surfaceTexture;
@@ -124,6 +128,7 @@ class RCTCameraViewFinder extends TextureView implements TextureView.SurfaceText
     }
 
     public void setReadyForCapture(final boolean shouldCapture) {
+        Log.d(TAG, "setReadyForCapture() --> is " + (shouldCapture ? "" : "not ") + "ready for capture!");
         RCTCamera.getInstance().setReadyForCapture(_cameraType, shouldCapture);
     }
 

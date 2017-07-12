@@ -30,6 +30,7 @@ public class RCTCameraView extends ViewGroup {
     private int _torchMode = -1;
     private int _flashMode = -1;
     private boolean continuousCapture;
+    private boolean readyForCapture;
 
 
     public RCTCameraView(Context context) {
@@ -84,6 +85,10 @@ public class RCTCameraView extends ViewGroup {
             if (-1 != this._torchMode) {
                 _viewFinder.setTorchMode(this._torchMode);
             }
+            if (this.readyForCapture) {
+                this.readyForCapture = false;
+                _viewFinder.setReadyForCapture(true);
+            }
             addView(_viewFinder);
         }
     }
@@ -132,7 +137,7 @@ public class RCTCameraView extends ViewGroup {
     }
 
     public void setReadyForCapture(boolean shouldCapture) {
-
+        this.readyForCapture = shouldCapture;
         if (this._viewFinder != null) {
             Log.d(TAG, "Setting readyForCapture = " + shouldCapture + " on non null viewFinder");
             this._viewFinder.setReadyForCapture(shouldCapture);
