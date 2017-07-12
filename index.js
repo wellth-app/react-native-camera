@@ -56,6 +56,13 @@ function convertNativeProps(props) {
 
   newProps.barcodeScannerEnabled = typeof props.onBarCodeRead === "function";
 
+  // Normalize the response from native Android and native iOS
+  if (typeof props.onCaptureOutput === "function") {
+    newProps.onCaptureOutput = data => {
+      props.onCaptureOutput({ output: data.nativeEvent.output || data.output });
+    };
+  }
+
   return newProps;
 }
 
