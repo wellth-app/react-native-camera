@@ -2,6 +2,7 @@ package com.wellthapp.ContinuousRCTCamera;
 
 import android.hardware.Camera;
 import android.os.Environment;
+import android.util.Log;
 
 import com.facebook.react.bridge.ReactContext;
 import com.lwansbrough.RCTCamera.ObjectIDGenerator;
@@ -9,6 +10,8 @@ import com.lwansbrough.RCTCamera.ObjectIDGenerator;
 import java.io.File;
 
 public class CameraPreviewCallback implements Camera.PreviewCallback {
+
+    public static final String TAG = "CameraPreviewCallback";
 
     public static File getFile() {
         return new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES), "frame-" + ObjectIDGenerator.nextID() + ".jpg");
@@ -23,7 +26,7 @@ public class CameraPreviewCallback implements Camera.PreviewCallback {
     }
 
     private final OnPreviewFrameAsyncTask asyncTask;
-    private volatile boolean shouldCapture = false;
+    private volatile boolean readyForCapture = false;
     private volatile ContinuousCaptureOutputConfigurations continuousCaptureOutputConfigurations;
 
     public CameraPreviewCallback(final ReactContext reactContext) {
@@ -34,7 +37,9 @@ public class CameraPreviewCallback implements Camera.PreviewCallback {
 
     @Override
     public void onPreviewFrame(final byte[] data, final Camera camera) {
-        if (this.getShouldCapture()) {
+        if (this.getReadyForCapture()) {
+            Log.d(TAG, "onPreviewFrame() --> readyForCapture == true");
+            this.setReadyForCapture(false);
             if (!this.asyncTask.isRunning()) {
                 this.asyncTask.start();
             }
@@ -51,13 +56,13 @@ public class CameraPreviewCallback implements Camera.PreviewCallback {
 
     public final void setReadyForCapture(final boolean shouldCapture) {
         synchronized (this) {
-            this.shouldCapture = shouldCapture;
+            this.readyForCapture = shouldCapture;
         }
     }
 
-    public final boolean getShouldCapture() {
+    public final boolean getReadyForCapture() {
         synchronized (this) {
-            return this.shouldCapture;
+            return this.readyForCapture;
         }
     }
 
