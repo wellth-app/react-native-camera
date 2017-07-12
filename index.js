@@ -202,18 +202,10 @@ export default class Camera extends Component {
     this._removeContinuousCaptureListener();
     if (onCaptureOutput) {
       console.log("Setting listener for ContinuousCaptureOutput on Android");
-
-      DeviceEventEmitter.addListener(
-        "ContinuousCaptureOutput",
-        this._onContinuousCaptureOutput
-      );
-
-      // this.continuousCaptureListener = Platform.select({
-      //   android: DeviceEventEmitter.addListener(
-      //     "ContinuousCaptureOutput",
-      //     this._onContinuousCaptureOutput
-      //   )
-      // });
+      // DeviceEventEmitter.addListener(
+      //   "ContinuousCaptureOutput",
+      //   this._onContinuousCaptureOutput
+      // );
     }
   }
 
@@ -222,7 +214,7 @@ export default class Camera extends Component {
     if (listener) {
       listener.remove();
     }
-    DeviceEventEmitter.removeAllListeners();
+    // DeviceEventEmitter.removeAllListeners();
   }
   _onContinuousCaptureOutput = data => {
     console.log("_onContinuousCaptureOutput() was called!");
