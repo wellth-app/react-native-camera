@@ -6,10 +6,6 @@
 package com.lwansbrough.RCTCamera;
 
 import android.content.ContentValues;
-import android.content.Context;
-import android.graphics.ImageFormat;
-import android.graphics.Rect;
-import android.graphics.YuvImage;
 import android.hardware.Camera;
 import android.media.*;
 import android.net.Uri;
@@ -23,13 +19,11 @@ import android.view.Surface;
 import com.facebook.react.bridge.LifecycleEventListener;
 import com.facebook.react.bridge.Promise;
 import com.facebook.react.bridge.ReactApplicationContext;
-import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.bridge.WritableNativeMap;
-import com.wellthapp.ContinuousRCTCamera.CameraPreviewCallback;
 
 import java.io.*;
 import java.text.SimpleDateFormat;
@@ -90,6 +84,7 @@ public class RCTCameraModule extends ReactContextBaseJavaModule implements Media
     private Promise mRecordingPromise = null;
     private ReadableMap mRecordingOptions;
     private Boolean mSafeToCapture = true;
+
 
     public RCTCameraModule(ReactApplicationContext reactContext) {
         super(reactContext);

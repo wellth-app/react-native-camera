@@ -5,7 +5,6 @@
 package com.lwansbrough.RCTCamera;
 
 import android.content.Context;
-import android.graphics.Rect;
 import android.graphics.SurfaceTexture;
 import android.hardware.Camera;
 import android.util.Log;
@@ -30,8 +29,6 @@ import com.google.zxing.MultiFormatReader;
 import com.google.zxing.PlanarYUVLuminanceSource;
 import com.google.zxing.Result;
 import com.google.zxing.common.HybridBinarizer;
-import com.wellthapp.ContinuousRCTCamera.CameraPreviewCallback;
-import com.wellthapp.ContinuousRCTCamera.ContinuousCaptureOutputConfigurations;
 
 class RCTCameraViewFinder extends TextureView implements TextureView.SurfaceTextureListener, Camera.PreviewCallback {
 

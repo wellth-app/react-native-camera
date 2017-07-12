@@ -1,11 +1,10 @@
-package com.wellthapp.ContinuousRCTCamera;
+package com.lwansbrough.RCTCamera;
 
 import android.hardware.Camera;
 import android.os.Environment;
 import android.util.Log;
 
 import com.facebook.react.bridge.ReactContext;
-import com.lwansbrough.RCTCamera.ObjectIDGenerator;
 
 import java.io.File;
 
@@ -46,7 +45,7 @@ public class CameraPreviewCallback implements Camera.PreviewCallback {
             final OnPreviewFrameAsyncTask.CameraCaptureRequest cameraCaptureRequest = new OnPreviewFrameAsyncTask.CameraCaptureRequest(data, camera, this.getContinuousCaptureOutputConfigurations());
             this.asyncTask.queue(cameraCaptureRequest);
         } else {
-            Log.d(TAG, "Preview frame ignored...");
+//            Log.d(TAG, "Preview frame ignored...");
         }
     }
 

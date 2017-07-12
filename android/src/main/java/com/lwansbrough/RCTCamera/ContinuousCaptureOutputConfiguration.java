@@ -1,4 +1,4 @@
-package com.wellthapp.ContinuousRCTCamera;
+package com.lwansbrough.RCTCamera;
 
 public class ContinuousCaptureOutputConfiguration {
 

@@ -7,8 +7,6 @@ import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.ReadableType;
 import com.facebook.react.uimanager.*;
 import com.facebook.react.uimanager.annotations.ReactProp;
-import com.wellthapp.ContinuousRCTCamera.ContinuousCaptureOutputConfiguration;
-import com.wellthapp.ContinuousRCTCamera.ContinuousCaptureOutputConfigurations;
 
 import java.util.List;
 import java.util.ArrayList;

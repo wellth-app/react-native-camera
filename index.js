@@ -194,6 +194,7 @@ export default class Camera extends Component {
     const { onCaptureOutput } = props || this.props;
     this._removeContinuousCaptureListener();
     if (onCaptureOutput) {
+      console.log("Setting listener for ContinuousCaptureOutput on Android");
       this.continuousCaptureListener = Platform.select({
         android: DeviceEventEmitter.addListener(
           "ContinuousCaptureOutput",
@@ -202,6 +203,7 @@ export default class Camera extends Component {
       });
     }
   }
+
   _removeContinuousCaptureListener() {
     const listener = this.continuousCaptureListener;
     if (listener) {
@@ -209,7 +211,7 @@ export default class Camera extends Component {
     }
   }
   _onContinuousCaptureOutput = data => {
-    console.log("Handling continuous capture output!");
+    console.log("_onContinuousCaptureOutput() was called!");
     if (this.props.onCaptureOutput) {
       this.props.onCaptureOutput(data);
     }

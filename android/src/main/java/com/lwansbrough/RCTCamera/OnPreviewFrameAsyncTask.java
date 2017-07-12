@@ -1,4 +1,4 @@
-package com.wellthapp.ContinuousRCTCamera;
+package com.lwansbrough.RCTCamera;
 
 import android.graphics.ImageFormat;
 import android.graphics.Rect;
@@ -10,6 +10,7 @@ import android.util.Log;
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.bridge.WritableMap;
+import com.facebook.react.modules.core.DeviceEventManagerModule;
 import com.facebook.react.uimanager.events.RCTEventEmitter;
 
 import java.io.File;
@@ -18,9 +19,9 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.util.concurrent.LinkedBlockingQueue;
 
-import static com.wellthapp.ContinuousRCTCamera.CameraPreviewCallback.getFile;
+import static com.lwansbrough.RCTCamera.CameraPreviewCallback.getFile;
 
-public class OnPreviewFrameAsyncTask extends AsyncTask<Void, Void, Void> {
+public class OnPreviewFrameAsyncTask extends AsyncTask<Void, Void, WritableMap> {
 
     public static final String TAG = "OnPreviewFrameAsyncTask";
 
@@ -78,7 +79,7 @@ public class OnPreviewFrameAsyncTask extends AsyncTask<Void, Void, Void> {
     }
 
     @Override
-    protected Void doInBackground(Void... params) {
+    protected WritableMap doInBackground(Void... params) {
 
         while(this.proceed) {
 
@@ -99,7 +100,7 @@ public class OnPreviewFrameAsyncTask extends AsyncTask<Void, Void, Void> {
                 final int previewHeight = parameters.getPreviewSize().height;
 
                 // Do the actual save
-                this.saveImageAndEmitEvent(bytes, previewWidth, previewHeight, configurations);
+                return this.saveImageAndEmitEvent(bytes, previewWidth, previewHeight, configurations);
 
             } catch (InterruptedException e) {
                 e.printStackTrace();
@@ -108,32 +109,48 @@ public class OnPreviewFrameAsyncTask extends AsyncTask<Void, Void, Void> {
         return null;
     }
 
-    private void saveImageAndEmitEvent(final byte[] bytes, final int width, final int height, final ContinuousCaptureOutputConfigurations configurations) {
+    @Override
+    protected void onPostExecute(final WritableMap writableMap) {
+        this.emitEvent(writableMap);
+        Log.d(TAG, "Emitted event on main thread");
+    }
 
-        Log.d(TAG, "saveImageAndEmitEvent() --> Saving image and emitting event with widht = " + width + " and height = " + height);
+    private void emitEvent(final WritableMap writableMap) {
+        Log.d(TAG, "Emitting event on main thread the new way");
+        this.reactContext.getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class).emit("ContinuousCaptureOutput", writableMap);
+    }
+
+
+    private WritableMap saveImageAndEmitEvent(final byte[] bytes, final int width, final int height, final ContinuousCaptureOutputConfigurations configurations) {
+
+        Log.d(TAG, "saveImageAndEmitEvent() --> Saving image and emitting event with width = " + width + " and height = " + height);
 
         final WritableMap outputMap = Arguments.createMap();
         final WritableMap outputMap2 = Arguments.createMap();
 
+        // Build output
         if (configurations != null) {
             final int numberOfConfigurations = configurations.getSize();
             for (int i = 0; i < numberOfConfigurations; i++) {
                 final ContinuousCaptureOutputConfiguration configuration = configurations.getConfiguration(i);
                 final File savedFile = this.saveImageWithConfiguration(bytes, width, height, configuration);
                 Log.d(TAG, "Adding configuration with name == " + configuration.name + " && file = " + savedFile.getAbsolutePath());
-
                 outputMap2.putString(configuration.name, savedFile.getAbsolutePath());
             }
-
             outputMap.putMap("output", outputMap2);
-
         }
 
         Log.d(TAG, "WritableMap == " + outputMap.toString());
 
+        // Emit the event here
+//        this.reactContext.getJSModule(RCTEventEmitter.class).receiveEvent(0, "ContinuousCaptureOutput", outputMap);
+//        RCTCameraModule.emitEvent(outputMap);
 
-        // Actually emit the event here
-        this.reactContext.getJSModule(RCTEventEmitter.class).receiveEvent(0, "ContinuousCaptureOutput", outputMap);
+//        Log.d(TAG, "Emitted the writable map the new way!");
+
+
+        return outputMap;
+
     }
 
     public File saveImageWithConfiguration(final byte[] data, int width, int height, final ContinuousCaptureOutputConfiguration configuration) {

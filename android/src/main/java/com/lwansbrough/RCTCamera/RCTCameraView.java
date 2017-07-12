@@ -12,8 +12,6 @@ import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.view.View;
 
-import com.wellthapp.ContinuousRCTCamera.ContinuousCaptureOutputConfigurations;
-
 import java.util.List;
 
 public class RCTCameraView extends ViewGroup {

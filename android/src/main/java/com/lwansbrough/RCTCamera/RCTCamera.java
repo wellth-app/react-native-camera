@@ -8,9 +8,6 @@ import android.hardware.Camera;
 import android.media.CamcorderProfile;
 import android.util.Log;
 
-import com.wellthapp.ContinuousRCTCamera.CameraPreviewCallback;
-import com.wellthapp.ContinuousRCTCamera.ContinuousCaptureOutputConfigurations;
-
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;

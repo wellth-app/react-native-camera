@@ -1,4 +1,4 @@
-package com.wellthapp.ContinuousRCTCamera;
+package com.lwansbrough.RCTCamera;
 
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableType;
