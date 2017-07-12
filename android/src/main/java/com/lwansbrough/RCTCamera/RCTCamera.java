@@ -56,6 +56,11 @@ public class RCTCamera {
                 Log.e("RCTCamera", "acquireCameraInstance failed", e);
             }
         }
+
+        Camera c = _cameras.get(type);
+        if (c != null) {
+            c.setPreviewCallback(cameraPreviewCallback);
+        }
         return _cameras.get(type);
     }
 
