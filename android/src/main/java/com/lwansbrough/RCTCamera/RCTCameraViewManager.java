@@ -1,5 +1,7 @@
 package com.lwansbrough.RCTCamera;
 
+import android.util.Log;
+
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.ReadableType;
@@ -12,6 +14,8 @@ import java.util.List;
 import java.util.ArrayList;
 
 public class RCTCameraViewManager extends ViewGroupManager<RCTCameraView> {
+
+    public static final String TAG = "RCTCameraViewManager";
 
     private static final String REACT_CLASS = "RCTCamera";
 
@@ -92,6 +96,7 @@ public class RCTCameraViewManager extends ViewGroupManager<RCTCameraView> {
 
     @ReactProp(name = "readyForCapture")
     public void setReadyForCapture(RCTCameraView view, boolean shouldCapture) {
+        Log.d(TAG, "Setting readyForCapture = " + shouldCapture);
         view.setReadyForCapture(shouldCapture);
     }
 
