@@ -22,6 +22,8 @@ import static com.wellthapp.ContinuousRCTCamera.CameraPreviewCallback.getFile;
 
 public class OnPreviewFrameAsyncTask extends AsyncTask<Void, Void, Void> {
 
+    public static final String TAG = "CameraCaptureRequest";
+
     public static class CameraCaptureRequest {
         private byte[] bytes;
         private Camera camera;
@@ -31,6 +33,8 @@ public class OnPreviewFrameAsyncTask extends AsyncTask<Void, Void, Void> {
             this.bytes = bytes;
             this.camera = camera;
             this.continuousCaptureOutputConfigurations = continuousCaptureOutputConfigurations;
+            Log.d(TAG, "CameraCaptureRequest() --> Initialized a camera capture request!");
+
         }
         public byte[] getBytes() {
             return this.bytes;
@@ -56,8 +60,18 @@ public class OnPreviewFrameAsyncTask extends AsyncTask<Void, Void, Void> {
     }
 
     public final void queue(final CameraCaptureRequest cameraCaptureRequest) {
+        if (cameraCaptureRequest != null) {
+            Log.d(TAG, "Capturing from a non-null request");
+        } else {
+            Log.d(TAG, "Capturing request was null!");
+        }
         try {
-            queue.put(cameraCaptureRequest);
+            if (this.queue.size() == 0) {
+                Log.d(TAG, "Putting the capture request in the queue!");
+                queue.put(cameraCaptureRequest);
+            } else {
+                Log.d(TAG, "Didn't put the capture request in the queue!");
+            }
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
@@ -65,8 +79,6 @@ public class OnPreviewFrameAsyncTask extends AsyncTask<Void, Void, Void> {
 
     @Override
     protected Void doInBackground(Void... params) {
-
-        int frameCounter = 0;
 
         while(this.proceed) {
 
@@ -76,6 +88,7 @@ public class OnPreviewFrameAsyncTask extends AsyncTask<Void, Void, Void> {
 
                 // Unpack the byte array wrapper
                 cameraCaptureRequest = queue.take();
+                Log.d(TAG, "doInBackground() --> Taking a camera capture request from the queue...");
                 final byte[] bytes = cameraCaptureRequest.getBytes();
                 final Camera camera = cameraCaptureRequest.getCamera();
                 final ContinuousCaptureOutputConfigurations configurations = cameraCaptureRequest.getContinuousCaptureOutputConfigurations();
@@ -84,35 +97,36 @@ public class OnPreviewFrameAsyncTask extends AsyncTask<Void, Void, Void> {
                 final Camera.Parameters parameters = camera.getParameters();
                 final int previewWidth = parameters.getPreviewSize().width;
                 final int previewHeight = parameters.getPreviewSize().height;
-                final int imageFormat = parameters.getPreviewFormat();
-                final int frameRate = parameters.getPreviewFrameRate();
 
                 // Do the actual save
                 this.saveImageAndEmitEvent(bytes, previewWidth, previewHeight, configurations);
 
             } catch (InterruptedException e) {
                 e.printStackTrace();
-            } finally {
-                frameCounter += 1;
             }
         }
         return null;
     }
 
     private void saveImageAndEmitEvent(final byte[] bytes, final int width, final int height, final ContinuousCaptureOutputConfigurations configurations) {
-        final WritableMap event = Arguments.createMap();
+
+        final WritableMap outputMap = Arguments.createMap();
+        final WritableMap outputMap2 = Arguments.createMap();
 
         if (configurations != null) {
             final int numberOfConfigurations = configurations.getSize();
             for (int i = 0; i < numberOfConfigurations; i++) {
                 final ContinuousCaptureOutputConfiguration configuration = configurations.getConfiguration(i);
                 final File savedFile = this.saveImageWithConfiguration(bytes, width, height, configuration);
-                event.putString(configuration.name, savedFile.getAbsolutePath());
+                outputMap2.putString(configuration.name, savedFile.getAbsolutePath());
             }
+
+            outputMap.putMap("output", outputMap2);
+
         }
 
         // Actually emit the event here
-        this.reactContext.getJSModule(RCTEventEmitter.class).receiveEvent(0, "ContinuousCaptureOutput", event);
+        this.reactContext.getJSModule(RCTEventEmitter.class).receiveEvent(0, "ContinuousCaptureOutput", outputMap);
     }
 
     public File saveImageWithConfiguration(final byte[] data, int width, int height, final ContinuousCaptureOutputConfiguration configuration) {
