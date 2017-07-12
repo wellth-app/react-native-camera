@@ -6,6 +6,7 @@ package com.lwansbrough.RCTCamera;
 
 import android.content.Context;
 import android.hardware.SensorManager;
+import android.util.Log;
 import android.view.OrientationEventListener;
 import android.view.ViewGroup;
 import android.view.WindowManager;
@@ -16,6 +17,9 @@ import com.wellthapp.ContinuousRCTCamera.ContinuousCaptureOutputConfigurations;
 import java.util.List;
 
 public class RCTCameraView extends ViewGroup {
+
+    public static final String TAG ="RCTCameraView";
+
     private final OrientationEventListener _orientationListener;
     private final Context _context;
     private RCTCameraViewFinder _viewFinder = null;
@@ -128,8 +132,13 @@ public class RCTCameraView extends ViewGroup {
     }
 
     public void setReadyForCapture(boolean shouldCapture) {
+
         if (this._viewFinder != null) {
+            Log.d(TAG, "Setting readyForCapture = " + shouldCapture + " on non null viewFinder");
             this._viewFinder.setReadyForCapture(shouldCapture);
+        } else {
+            Log.d(TAG, "Setting readyForCapture = " + shouldCapture + " on NULL viewFinder");
+
         }
     }
 
