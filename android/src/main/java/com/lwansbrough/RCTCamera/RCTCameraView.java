@@ -85,6 +85,9 @@ public class RCTCameraView extends ViewGroup {
             if (-1 != this._torchMode) {
                 _viewFinder.setTorchMode(this._torchMode);
             }
+            if (this.continuousCapture) {
+                _viewFinder.setContinuousCapture(true);
+            }
             if (this.readyForCapture) {
                 this.readyForCapture = false;
                 _viewFinder.setReadyForCapture(true);

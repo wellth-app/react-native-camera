@@ -172,19 +172,11 @@ public class RCTCamera {
     }
 
     public void setContinuousCapture(final int cameraType, final boolean continuousCapture) {
-        if (_continuousCapture == continuousCapture) {
-            return;
-        }
+        Log.d(TAG, "setContinuousCapture() --> continuousCapture = " + continuousCapture);
         this._continuousCapture = continuousCapture;
-
         Camera camera = this.acquireCameraInstance(cameraType);
-        if (null == camera) {
-            return;
-        }
-
         // Add the listener here
-        camera.setPreviewCallback(this.cameraPreviewCallback);
-
+        camera.setPreviewCallback(cameraPreviewCallback);
     }
 
     public void setReadyForCapture(final int cameraType, final boolean shouldCapture) {
