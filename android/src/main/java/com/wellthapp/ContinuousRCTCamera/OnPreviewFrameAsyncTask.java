@@ -22,7 +22,7 @@ import static com.wellthapp.ContinuousRCTCamera.CameraPreviewCallback.getFile;
 
 public class OnPreviewFrameAsyncTask extends AsyncTask<Void, Void, Void> {
 
-    public static final String TAG = "CameraCaptureRequest";
+    public static final String TAG = "OnPreviewFrameAsyncTask";
 
     public static class CameraCaptureRequest {
         private byte[] bytes;
@@ -110,6 +110,8 @@ public class OnPreviewFrameAsyncTask extends AsyncTask<Void, Void, Void> {
 
     private void saveImageAndEmitEvent(final byte[] bytes, final int width, final int height, final ContinuousCaptureOutputConfigurations configurations) {
 
+        Log.d(TAG, "saveImageAndEmitEvent() --> Saving image and emitting event with widht = " + width + " and height = " + height);
+
         final WritableMap outputMap = Arguments.createMap();
         final WritableMap outputMap2 = Arguments.createMap();
 
@@ -118,12 +120,17 @@ public class OnPreviewFrameAsyncTask extends AsyncTask<Void, Void, Void> {
             for (int i = 0; i < numberOfConfigurations; i++) {
                 final ContinuousCaptureOutputConfiguration configuration = configurations.getConfiguration(i);
                 final File savedFile = this.saveImageWithConfiguration(bytes, width, height, configuration);
+                Log.d(TAG, "Adding configuration with name == " + configuration.name + " && file = " + savedFile.getAbsolutePath());
+
                 outputMap2.putString(configuration.name, savedFile.getAbsolutePath());
             }
 
             outputMap.putMap("output", outputMap2);
 
         }
+
+        Log.d(TAG, "WritableMap == " + outputMap.toString());
+
 
         // Actually emit the event here
         this.reactContext.getJSModule(RCTEventEmitter.class).receiveEvent(0, "ContinuousCaptureOutput", outputMap);
