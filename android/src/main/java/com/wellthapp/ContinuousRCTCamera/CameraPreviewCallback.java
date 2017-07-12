@@ -49,30 +49,21 @@ public class CameraPreviewCallback implements Camera.PreviewCallback {
     }
 
     public final void setContinuousCaptureOutputConfigurations(final ContinuousCaptureOutputConfigurations continuousCaptureOutputConfigurations) {
-        synchronized (this) {
-            this.continuousCaptureOutputConfigurations = continuousCaptureOutputConfigurations;
-        }
+        this.continuousCaptureOutputConfigurations = continuousCaptureOutputConfigurations;
     }
 
     public final void setReadyForCapture(final boolean shouldCapture) {
         Log.d(TAG, "setReadyForCapture() --> Setting readyForCapture = " + shouldCapture);
-        synchronized (this) {
-            this.readyForCapture = shouldCapture;
-            Log.d(TAG, "setReadyForCapture() --> Finished setting readyForCapture = " + shouldCapture);
-
-        }
+        this.readyForCapture = shouldCapture;
+        Log.d(TAG, "setReadyForCapture() --> Finished setting readyForCapture = " + shouldCapture);
     }
 
     public final boolean getReadyForCapture() {
-        synchronized (this) {
-            return this.readyForCapture;
-        }
+        return this.readyForCapture;
     }
 
     public final ContinuousCaptureOutputConfigurations getContinuousCaptureOutputConfigurations() {
-        synchronized (this) {
-            return this.continuousCaptureOutputConfigurations;
-        }
+        return this.continuousCaptureOutputConfigurations;
     }
 
 }
