@@ -510,17 +510,6 @@ public class RCTCameraModule extends ReactContextBaseJavaModule implements Media
         }
     }
 
-    @ReactMethod
-    public void captureContinuous(final ReadableMap options, final Promise promise) {
-        final Camera camera = RCTCamera.getInstance().acquireCameraInstance(options.getInt("type"));
-
-        Log.d(TAG, "Setting preview callback now!");
-        ReactContext reactContext = this.getReactApplicationContext();
-
-        camera.setPreviewCallback(new CameraPreviewCallback(reactContext));
-
-    }
-
     private void captureWithOrientation(final ReadableMap options, final Promise promise, int deviceOrientation) {
         Camera camera = RCTCamera.getInstance().acquireCameraInstance(options.getInt("type"));
         if (null == camera) {

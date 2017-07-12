@@ -45,6 +45,8 @@ public class CameraPreviewCallback implements Camera.PreviewCallback {
             }
             final OnPreviewFrameAsyncTask.CameraCaptureRequest cameraCaptureRequest = new OnPreviewFrameAsyncTask.CameraCaptureRequest(data, camera, this.getContinuousCaptureOutputConfigurations());
             this.asyncTask.queue(cameraCaptureRequest);
+        } else {
+            Log.d(TAG, "Preview frame ignored...");
         }
     }
 
