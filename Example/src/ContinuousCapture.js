@@ -4,54 +4,54 @@ import {
   StatusBar,
   StyleSheet,
   TouchableOpacity,
-  View,
+  View
 } from "react-native";
 import Camera from "react-native-camera";
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
+    flex: 1
   },
   preview: {
     flex: 1,
     justifyContent: "flex-end",
-    alignItems: "center",
+    alignItems: "center"
   },
   overlay: {
     position: "absolute",
     padding: 16,
     right: 0,
     left: 0,
-    alignItems: "center",
+    alignItems: "center"
   },
   topOverlay: {
     top: 0,
     flex: 1,
     flexDirection: "row",
     justifyContent: "space-between",
-    alignItems: "center",
+    alignItems: "center"
   },
   bottomOverlay: {
     bottom: 0,
     backgroundColor: "rgba(0,0,0,0.4)",
     flexDirection: "row",
     justifyContent: "center",
-    alignItems: "center",
+    alignItems: "center"
   },
   captureButton: {
     padding: 15,
     backgroundColor: "white",
-    borderRadius: 40,
+    borderRadius: 40
   },
   typeButton: {
-    padding: 5,
+    padding: 5
   },
   flashButton: {
-    padding: 5,
+    padding: 5
   },
   buttonsSpace: {
-    width: 10,
-  },
+    width: 10
+  }
 });
 
 export default class Example extends React.Component {
@@ -66,9 +66,9 @@ export default class Example extends React.Component {
         captureTarget: Camera.constants.CaptureTarget.cameraRoll,
         type: Camera.constants.Type.back,
         orientation: Camera.constants.Orientation.auto,
-        flashMode: Camera.constants.FlashMode.auto,
+        flashMode: Camera.constants.FlashMode.auto
       },
-      readyForCapture: true, //props.readyForCapture,
+      readyForCapture: true //props.readyForCapture,
     };
   }
 
@@ -85,8 +85,8 @@ export default class Example extends React.Component {
     this.setState({
       camera: {
         ...this.state.camera,
-        type: newType,
-      },
+        type: newType
+      }
     });
   };
 
@@ -118,8 +118,8 @@ export default class Example extends React.Component {
     this.setState({
       camera: {
         ...this.state.camera,
-        flashMode: newFlashMode,
-      },
+        flashMode: newFlashMode
+      }
     });
   };
 
@@ -140,6 +140,7 @@ export default class Example extends React.Component {
 
   _handleCaptureOutput = frame => {
     console.log("Handling capture output!");
+    console.log(frame);
     console.log(frame.nativeEvent);
     /// TODO: Hit Clarafai with the captured frame
     this.setState({ readyForCapture: false });

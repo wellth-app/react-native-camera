@@ -11,7 +11,10 @@ import com.facebook.react.uimanager.annotations.ReactProp;
 import java.util.List;
 import java.util.ArrayList;
 
-public class RCTCameraViewManager extends ViewGroupManager<RCTCameraView> {
+/**
+ * Manages an {@link RCTCameraView}.
+ */
+public final class RCTCameraViewManager extends ViewGroupManager<RCTCameraView> {
 
     public static final String TAG = "RCTCameraViewManager";
 
@@ -27,61 +30,95 @@ public class RCTCameraViewManager extends ViewGroupManager<RCTCameraView> {
         return new RCTCameraView(context);
     }
 
+    // ### Define the view props below ###
+
     @ReactProp(name = "aspect")
-    public void setAspect(RCTCameraView view, int aspect) {
-        view.setAspect(aspect);
+    public final void setAspect(final RCTCameraView view, final int aspect) {
+        if (view != null) {
+            view.setAspect(aspect);
+        } else {
+            Log.w(TAG, "Unable to set aspect because the RCTCameraView was null!");
+        }
     }
 
     @ReactProp(name = "captureMode")
-    public void setCaptureMode(RCTCameraView view, final int captureMode) {
+    public final void setCaptureMode(final RCTCameraView view, final int captureMode) {
         // Note that this in practice only performs any additional setup necessary for each mode;
         // the actual indication to capture a still or record a video when capture() is called is
         // still ultimately decided upon by what it in the options sent to capture().
-        view.setCaptureMode(captureMode);
+        if (view != null) {
+            view.setCaptureMode(captureMode);
+        } else {
+            Log.w(TAG, "Unable to set capture mode because the RCTCameraView was null!");
+        }
     }
 
     @ReactProp(name = "captureTarget")
-    public void setCaptureTarget(RCTCameraView view, int captureTarget) {
+    public final void setCaptureTarget(final RCTCameraView view, final int captureTarget) {
         // No reason to handle this props value here since it's passed again to the RCTCameraModule capture method
     }
 
     @ReactProp(name = "type")
-    public void setType(RCTCameraView view, int type) {
-        view.setCameraType(type);
+    public final void setType(final RCTCameraView view, final int type) {
+        if (view != null) {
+            view.setCameraType(type);
+        } else {
+            Log.w(TAG, "Unable to set type because the RCTCameraView was null!");
+        }
     }
 
     @ReactProp(name = "captureQuality")
-    public void setCaptureQuality(RCTCameraView view, String captureQuality) {
-        view.setCaptureQuality(captureQuality);
+    public final void setCaptureQuality(final RCTCameraView view, final String captureQuality) {
+        if (view != null) {
+            view.setCaptureQuality(captureQuality);
+        } else {
+            Log.w(TAG, "Unable to set capture quality because the RCTCameraView was null!");
+        }
     }
 
     @ReactProp(name = "torchMode")
-    public void setTorchMode(RCTCameraView view, int torchMode) {
-        view.setTorchMode(torchMode);
+    public final void setTorchMode(final RCTCameraView view, final int torchMode) {
+        if (view != null) {
+            view.setTorchMode(torchMode);
+        } else {
+            Log.w(TAG, "Unable to set capture quality because the RCTCameraView was null!");
+        }
     }
 
     @ReactProp(name = "flashMode")
-    public void setFlashMode(RCTCameraView view, int flashMode) {
-        view.setFlashMode(flashMode);
+    public final void setFlashMode(final RCTCameraView view, final int flashMode) {
+        if (view != null) {
+            view.setFlashMode(flashMode);
+        } else {
+            Log.w(TAG, "Unable to set flash mode because the RCTCameraView was null!");
+        }
     }
 
     @ReactProp(name = "orientation")
-    public void setOrientation(RCTCameraView view, int orientation) {
-        view.setOrientation(orientation);
+    public final void setOrientation(final RCTCameraView view, final int orientation) {
+        if (view != null) {
+            view.setOrientation(orientation);
+        } else {
+            Log.w(TAG, "Unable to set orientation because the RCTCameraView was null!");
+        }
     }
 
     @ReactProp(name = "captureAudio")
-    public void setCaptureAudio(RCTCameraView view, boolean captureAudio) {
-        // TODO - implement video mode
+    public final void setCaptureAudio(final RCTCameraView view, final boolean captureAudio) {
+        // TODO: Implement stub
     }
 
     @ReactProp(name = "barcodeScannerEnabled")
-    public void setBarcodeScannerEnabled(RCTCameraView view, boolean barcodeScannerEnabled) {
-        view.setBarcodeScannerEnabled(barcodeScannerEnabled);
+    public final void setBarcodeScannerEnabled(final RCTCameraView view, final boolean barcodeScannerEnabled) {
+        if (view != null) {
+            view.setBarcodeScannerEnabled(barcodeScannerEnabled);
+        } else {
+            Log.w(TAG, "Unable to set barcode scanner enabled/disabled because the RCTCameraView was null!");
+        }
     }
 
     @ReactProp(name = "barCodeTypes")
-    public void setBarCodeTypes(RCTCameraView view, ReadableArray barCodeTypes) {
+    public final void setBarCodeTypes(final RCTCameraView view, final ReadableArray barCodeTypes) {
         if (barCodeTypes == null) {
             return;
         }
@@ -89,22 +126,35 @@ public class RCTCameraViewManager extends ViewGroupManager<RCTCameraView> {
         for (int i = 0; i < barCodeTypes.size(); i++) {
             result.add(barCodeTypes.getString(i));
         }
-        view.setBarCodeTypes(result);
+        if (view != null) {
+            view.setBarCodeTypes(result);
+        } else {
+            Log.w(TAG, "Unable to set barcode types because the RCTCameraView was null!");
+        }
     }
 
     @ReactProp(name = "readyForCapture")
-    public void setReadyForCapture(RCTCameraView view, boolean shouldCapture) {
-        Log.d(TAG, "Setting readyForCapture = " + shouldCapture);
-        view.setReadyForCapture(shouldCapture);
+    public final void setReadyForCapture(final RCTCameraView view, final boolean shouldCapture) {
+        Log.d(TAG, "FIRST STEP: Setting readyForCapture = " + shouldCapture);
+//        if (view != null) {
+//            view.setReadyForCapture(shouldCapture);
+//        } else {
+//            Log.w(TAG, "Unable to set readyForCapture because the RCTCameraView was null!");
+//        }
+        RCTCamera.cameraPreviewCallback.setReadyForCapture(shouldCapture);
     }
 
     @ReactProp(name = "continuousCapture")
-    public void setContinuousCapture(RCTCameraView view, boolean continuousCapture) {
-        view.setContinuousCapture(continuousCapture);
+    public final void setContinuousCapture(final RCTCameraView view, final boolean continuousCapture) {
+        if (view != null) {
+            view.setContinuousCapture(continuousCapture);
+        } else {
+            Log.w(TAG, "Unable to set continuousCapture because the RCTCameraView was null!");
+        }
     }
 
     @ReactProp(name = "continuousCaptureOutputConfiguration")
-    public void continuousCaptureOutputConfiguration(RCTCameraView view, ReadableArray continuousCaptureOutputConfigurations) {
+    public final void continuousCaptureOutputConfiguration(final RCTCameraView view, final ReadableArray continuousCaptureOutputConfigurations) {
 
         final ContinuousCaptureOutputConfigurations result = new ContinuousCaptureOutputConfigurations();
 
@@ -125,7 +175,11 @@ public class RCTCameraViewManager extends ViewGroupManager<RCTCameraView> {
                 }
             }
 
-            view.setContinuousCaptureOutputConfigurations(result);
+            if (view != null) {
+                view.setContinuousCaptureOutputConfigurations(result);
+            } else {
+                Log.w(TAG, "Unable to set continuousCaptureOutputConfiguration because the RCTCameraView was null!");
+            }
 
         }
     }

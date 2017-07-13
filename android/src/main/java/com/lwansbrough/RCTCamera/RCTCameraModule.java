@@ -72,7 +72,6 @@ public class RCTCameraModule extends ReactContextBaseJavaModule implements Media
     public static final int MEDIA_TYPE_IMAGE = 1;
     public static final int MEDIA_TYPE_VIDEO = 2;
 
-    private static final int POSITIVE_IDENTIFICATION_TIMEOUT_MS = 20000;
 
     private static ReactApplicationContext _reactContext;
     private RCTSensorOrientationChecker _sensorOrientationChecker;
@@ -201,6 +200,7 @@ public class RCTCameraModule extends ReactContextBaseJavaModule implements Media
             private Map<String, Object> getCaptureModeConstants() {
                 return Collections.unmodifiableMap(new HashMap<String, Object>() {
                     {
+                        put("continuous", RCT_CAMERA_CAPTURE_MODE_CONTINUOUS);
                         put("still", RCT_CAMERA_CAPTURE_MODE_STILL);
                         put("video", RCT_CAMERA_CAPTURE_MODE_VIDEO);
                     }

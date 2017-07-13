@@ -15,7 +15,7 @@ import java.lang.Math;
 
 public class RCTCamera {
 
-    private static CameraPreviewCallback cameraPreviewCallback = new CameraPreviewCallback(RCTCameraModule.getReactContextSingleton());
+    public static CameraPreviewCallback cameraPreviewCallback = new CameraPreviewCallback(RCTCameraModule.getReactContextSingleton());
 
     public static CameraPreviewCallback getCameraPreviewCallback() {
         return cameraPreviewCallback;
@@ -185,7 +185,7 @@ public class RCTCamera {
     public void setReadyForCapture(final int cameraType, final boolean shouldCapture) {
         Log.d(TAG, "setReadyForCapture() --> shouldCapture = " + shouldCapture);
         this._readyForCapture = shouldCapture;
-        this.cameraPreviewCallback.setReadyForCapture(shouldCapture);
+        cameraPreviewCallback.setReadyForCapture(shouldCapture);
     }
 
     public void setContinuousCaptureOutputConfigurations(final ContinuousCaptureOutputConfigurations continuousCaptureOutputConfigurations) {

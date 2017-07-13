@@ -8,7 +8,7 @@ import com.facebook.react.bridge.ReactContext;
 
 import java.io.File;
 
-public class CameraPreviewCallback implements Camera.PreviewCallback {
+public final class CameraPreviewCallback implements Camera.PreviewCallback {
 
     public static final String TAG = "CameraPreviewCallback";
 
@@ -38,7 +38,7 @@ public class CameraPreviewCallback implements Camera.PreviewCallback {
     public void onPreviewFrame(final byte[] data, final Camera camera) {
         if (this.getReadyForCapture()) {
             Log.d(TAG, "onPreviewFrame() --> readyForCapture == true");
-            this.setReadyForCapture(false);
+            this.readyForCapture = false;
             if (!this.asyncTask.isRunning()) {
                 this.asyncTask.start();
             }

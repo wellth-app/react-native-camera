@@ -142,9 +142,9 @@ public class RCTCameraView extends ViewGroup {
         if (this._viewFinder != null) {
             Log.d(TAG, "Setting readyForCapture = " + shouldCapture + " on non null viewFinder");
             this._viewFinder.setReadyForCapture(shouldCapture);
+            this.readyForCapture = false;
         } else {
             Log.d(TAG, "Setting readyForCapture = " + shouldCapture + " on NULL viewFinder");
-
         }
     }
 

@@ -1,6 +1,5 @@
 package com.lwansbrough.RCTCamera;
 
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
@@ -24,7 +23,6 @@ public class RCTCameraPackage implements ReactPackage {
 
     @Override
     public List<ViewManager> createViewManagers(ReactApplicationContext reactApplicationContext) {
-        //noinspection ArraysAsListWithZeroOrOneArgument
         return Collections.<ViewManager>singletonList(new RCTCameraViewManager());
     }
 

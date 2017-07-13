@@ -5,6 +5,8 @@ import android.graphics.Rect;
 import android.graphics.YuvImage;
 import android.hardware.Camera;
 import android.os.AsyncTask;
+import android.os.Handler;
+import android.os.Looper;
 import android.util.Log;
 
 import com.facebook.react.bridge.Arguments;
@@ -52,12 +54,14 @@ public class OnPreviewFrameAsyncTask extends AsyncTask<Void, Void, WritableMap> 
 
     private final ReactContext reactContext;
     private final LinkedBlockingQueue<CameraCaptureRequest> queue = new LinkedBlockingQueue<>();
+    private final Handler handler;
 
     private volatile boolean isRunning = false;
     private volatile boolean proceed = true;
 
     public OnPreviewFrameAsyncTask(final ReactContext reactContext) {
         this.reactContext = reactContext;
+        this.handler = new Handler(Looper.getMainLooper());
     }
 
     public final void queue(final CameraCaptureRequest cameraCaptureRequest) {
@@ -70,6 +74,7 @@ public class OnPreviewFrameAsyncTask extends AsyncTask<Void, Void, WritableMap> 
             if (this.queue.size() == 0) {
                 Log.d(TAG, "Putting the capture request in the queue!");
                 queue.put(cameraCaptureRequest);
+                Log.d(TAG, "Capture request is now in the queue!");
             } else {
                 Log.d(TAG, "Didn't put the capture request in the queue!");
             }
@@ -88,8 +93,9 @@ public class OnPreviewFrameAsyncTask extends AsyncTask<Void, Void, WritableMap> 
             try {
 
                 // Unpack the byte array wrapper
+                Log.d(TAG, "doInBackground() --> Prepping to take a camera capture request from the queue...");
                 cameraCaptureRequest = queue.take();
-                Log.d(TAG, "doInBackground() --> Taking a camera capture request from the queue...");
+                Log.d(TAG, "doInBackground() --> Took a camera capture request from the queue...");
                 final byte[] bytes = cameraCaptureRequest.getBytes();
                 final Camera camera = cameraCaptureRequest.getCamera();
                 final ContinuousCaptureOutputConfigurations configurations = cameraCaptureRequest.getContinuousCaptureOutputConfigurations();
@@ -100,7 +106,7 @@ public class OnPreviewFrameAsyncTask extends AsyncTask<Void, Void, WritableMap> 
                 final int previewHeight = parameters.getPreviewSize().height;
 
                 // Do the actual save
-                return this.saveImageAndEmitEvent(bytes, previewWidth, previewHeight, configurations);
+                this.emitEvent(this.saveImageAndEmitEvent(bytes, previewWidth, previewHeight, configurations));
 
             } catch (InterruptedException e) {
                 e.printStackTrace();
@@ -117,7 +123,12 @@ public class OnPreviewFrameAsyncTask extends AsyncTask<Void, Void, WritableMap> 
 
     private void emitEvent(final WritableMap writableMap) {
         Log.d(TAG, "Emitting event on main thread the new way");
-        this.reactContext.getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class).emit("ContinuousCaptureOutput", writableMap);
+        this.handler.post(new Runnable() {
+            @Override
+            public void run() {
+                reactContext.getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class).emit("ContinuousCaptureOutput", writableMap);
+            }
+        });
     }
 
 
