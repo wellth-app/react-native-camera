@@ -167,17 +167,18 @@ public class OnPreviewFrameAsyncTask extends AsyncTask<Void, Void, WritableMap> 
         if (configuration != null) {
             final int adjustedHeight = (int)(height * configuration.height);
             final int adjustedWidth = (int)(width * configuration.width);
-            final int adjustedQuality = (int)configuration.quality * 100;
+            final double adjustedQuality = configuration.quality * 100d;
+
             Rect rect = new Rect(0, 0, adjustedWidth, adjustedHeight);
             YuvImage img = new YuvImage(data, ImageFormat.NV21, adjustedWidth, adjustedHeight, null);
             OutputStream outStream = null;
             File file = getFile(configuration.name);
 
 
-            Log.d(TAG, "SAVING FILE = " + configuration.name + " WIDTH AHEIGHT = " + adjustedHeight + " && AWIDTH = " + adjustedWidth + " && AQUALITY = " + adjustedQuality);
+            Log.d(TAG, "SAVING FILE = " + configuration.name + " WIDTH AHEIGHT = " + adjustedHeight + " && AWIDTH = " + adjustedWidth + " && AQUALITY = " + (int)adjustedQuality);
             try {
                 outStream = new FileOutputStream(file);
-                img.compressToJpeg(rect, ((int)configuration.quality * 100), outStream);
+                img.compressToJpeg(rect, (int)adjustedQuality, outStream);
                 outStream.flush();
                 outStream.close();
             } catch (IOException e) {
