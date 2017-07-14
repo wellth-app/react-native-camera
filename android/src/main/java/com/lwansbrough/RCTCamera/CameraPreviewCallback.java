@@ -16,9 +16,17 @@ public final class CameraPreviewCallback implements Camera.PreviewCallback {
         return new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES), "frame-" + ObjectIDGenerator.nextID() + ".jpg");
     }
 
+//    public static File getFile(final String name) {
+//        if (name != null) {
+//            return new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES), name + ".jpg");
+//        } else {
+//            return getFile();
+//        }
+//    }
+
     public static File getFile(final String name) {
         if (name != null) {
-            return new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES), name + ".jpg");
+            return new File(RCTCameraModule.getReactContextSingleton().getFilesDir(), name + ".jpg");
         } else {
             return getFile();
         }
