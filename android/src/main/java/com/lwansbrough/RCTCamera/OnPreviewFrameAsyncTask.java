@@ -206,8 +206,6 @@ public class OnPreviewFrameAsyncTask extends AsyncTask<Void, Void, WritableMap> 
                 }
             } catch (FileNotFoundException e) {
                 e.printStackTrace();
-            } catch (FileNotFoundException e) {
-                e.printStackTrace();
             } catch (IOException e) {
                 e.printStackTrace();
             }
