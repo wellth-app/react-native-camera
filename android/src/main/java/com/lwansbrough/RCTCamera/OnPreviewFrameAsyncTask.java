@@ -1,5 +1,7 @@
 package com.lwansbrough.RCTCamera;
 
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.ImageFormat;
 import android.graphics.Rect;
 import android.graphics.YuvImage;
@@ -13,9 +15,10 @@ import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.modules.core.DeviceEventManagerModule;
-import com.facebook.react.uimanager.events.RCTEventEmitter;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
@@ -163,28 +166,49 @@ public class OnPreviewFrameAsyncTask extends AsyncTask<Void, Void, WritableMap> 
 
     }
 
+    private ByteArrayOutputStream toByteArrayOutputStream(final byte[] data, final int width, final int height, final int quality) {
+        ByteArrayOutputStream out = new ByteArrayOutputStream();
+        YuvImage yuvImage = new YuvImage(data, ImageFormat.NV21, width, height, null);
+        Rect rect = new Rect(0, 0, width, height);
+        yuvImage.compressToJpeg(rect, quality, out);
+        return out;
+//        byte[] imageBytes = out.toByteArray();
+//        Bitmap image = BitmapFactory.decodeByteArray(imageBytes, 0, imageBytes.length);
+    }
+
     public File saveImageWithConfiguration(final byte[] data, int width, int height, final ContinuousCaptureOutputConfiguration configuration) {
         if (configuration != null) {
-            final int adjustedHeight = (int)(height * configuration.height);
-            final int adjustedWidth = (int)(width * configuration.width);
+            final int adjustedHeight = (int) (height * configuration.height);
+            final int adjustedWidth = (int) (width * configuration.width);
             final double adjustedQuality = configuration.quality * 100d;
 
-            Rect rect = new Rect(0, 0, adjustedWidth, adjustedHeight);
-            YuvImage img = new YuvImage(data, ImageFormat.NV21, adjustedWidth, adjustedHeight, null);
-            OutputStream outStream = null;
-            File file = getFile(configuration.name);
+            // Get the image byte array output stream
+            final ByteArrayOutputStream byteArrayOutputStream = toByteArrayOutputStream(data, width, height, (int)adjustedQuality);
+            final File file = getFile(configuration.name);
+            final OutputStream outputStream = new FileOutputStream(file);
 
-
-            Log.d(TAG, "SAVING FILE = " + configuration.name + " WIDTH AHEIGHT = " + adjustedHeight + " && AWIDTH = " + adjustedWidth + " && AQUALITY = " + (int)adjustedQuality);
-            try {
-                outStream = new FileOutputStream(file);
-                img.compressToJpeg(rect, (int)adjustedQuality, outStream);
-                outStream.flush();
-                outStream.close();
-            } catch (IOException e) {
-                e.printStackTrace();
+            if (width == adjustedWidth && height == adjustedHeight) {
+                // In this case, the image isn't scaled.  Save it as-is.
+                try {
+                    byteArrayOutputStream.writeTo(outputStream);
+                    byteArrayOutputStream.flush();
+                    outputStream.flush();
+                    outputStream.close();
+                    byteArrayOutputStream.close();
+                } catch (FileNotFoundException e) {
+                    e.printStackTrace();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            } else {
+                // In this case, the image is scaled and we need to do some manipulation.
+                byte[] imageBytes = byteArrayOutputStream.toByteArray();
+                Bitmap bitmapImage = BitmapFactory.decodeByteArray(imageBytes, 0, imageBytes.length);
+                Bitmap resizedBitmapImage = Bitmap.createScaledBitmap(bitmapImage, adjustedWidth, adjustedHeight, true);
+                resizedBitmapImage.compress(Bitmap.CompressFormat.JPEG, (int)adjustedQuality, outputStream);
+                outputStream.flush();
+                outputStream.close();
             }
-            return file;
         } else {
             Log.w("PreviewFrameAsyncTask", "The configuration for save image was null!");
             return null;
