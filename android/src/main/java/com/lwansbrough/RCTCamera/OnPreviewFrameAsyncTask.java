@@ -210,6 +210,8 @@ public class OnPreviewFrameAsyncTask extends AsyncTask<Void, Void, WritableMap> 
                 e.printStackTrace();
             }
 
+            return file;
+
         } else {
             Log.w("PreviewFrameAsyncTask", "The configuration for save image was null!");
             return null;
