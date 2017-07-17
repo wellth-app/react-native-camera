@@ -185,30 +185,35 @@ public class OnPreviewFrameAsyncTask extends AsyncTask<Void, Void, WritableMap> 
             // Get the image byte array output stream
             final ByteArrayOutputStream byteArrayOutputStream = toByteArrayOutputStream(data, width, height, (int)adjustedQuality);
             final File file = getFile(configuration.name);
-            final OutputStream outputStream = new FileOutputStream(file);
-
-            if (width == adjustedWidth && height == adjustedHeight) {
-                // In this case, the image isn't scaled.  Save it as-is.
-                try {
-                    byteArrayOutputStream.writeTo(outputStream);
-                    byteArrayOutputStream.flush();
+            final OutputStream outputStream;
+            try {
+                outputStream = new FileOutputStream(file);
+                if (width == adjustedWidth && height == adjustedHeight) {
+                    // In this case, the image isn't scaled.  Save it as-is.
+                    try {
+                        byteArrayOutputStream.writeTo(outputStream);
+                        byteArrayOutputStream.flush();
+                        outputStream.flush();
+                        outputStream.close();
+                        byteArrayOutputStream.close();
+                    }
+                } else {
+                    // In this case, the image is scaled and we need to do some manipulation.
+                    byte[] imageBytes = byteArrayOutputStream.toByteArray();
+                    Bitmap bitmapImage = BitmapFactory.decodeByteArray(imageBytes, 0, imageBytes.length);
+                    Bitmap resizedBitmapImage = Bitmap.createScaledBitmap(bitmapImage, adjustedWidth, adjustedHeight, true);
+                    resizedBitmapImage.compress(Bitmap.CompressFormat.JPEG, (int)adjustedQuality, outputStream);
                     outputStream.flush();
                     outputStream.close();
-                    byteArrayOutputStream.close();
-                } catch (FileNotFoundException e) {
-                    e.printStackTrace();
-                } catch (IOException e) {
-                    e.printStackTrace();
                 }
-            } else {
-                // In this case, the image is scaled and we need to do some manipulation.
-                byte[] imageBytes = byteArrayOutputStream.toByteArray();
-                Bitmap bitmapImage = BitmapFactory.decodeByteArray(imageBytes, 0, imageBytes.length);
-                Bitmap resizedBitmapImage = Bitmap.createScaledBitmap(bitmapImage, adjustedWidth, adjustedHeight, true);
-                resizedBitmapImage.compress(Bitmap.CompressFormat.JPEG, (int)adjustedQuality, outputStream);
-                outputStream.flush();
-                outputStream.close();
+            } catch (FileNotFoundException e) {
+                e.printStackTrace();
+            } catch (FileNotFoundException e) {
+                e.printStackTrace();
+            } catch (IOException e) {
+                e.printStackTrace();
             }
+            
         } else {
             Log.w("PreviewFrameAsyncTask", "The configuration for save image was null!");
             return null;
