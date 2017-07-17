@@ -190,13 +190,11 @@ public class OnPreviewFrameAsyncTask extends AsyncTask<Void, Void, WritableMap> 
                 outputStream = new FileOutputStream(file);
                 if (width == adjustedWidth && height == adjustedHeight) {
                     // In this case, the image isn't scaled.  Save it as-is.
-                    try {
-                        byteArrayOutputStream.writeTo(outputStream);
-                        byteArrayOutputStream.flush();
-                        outputStream.flush();
-                        outputStream.close();
-                        byteArrayOutputStream.close();
-                    }
+                    byteArrayOutputStream.writeTo(outputStream);
+                    byteArrayOutputStream.flush();
+                    outputStream.flush();
+                    outputStream.close();
+                    byteArrayOutputStream.close();
                 } else {
                     // In this case, the image is scaled and we need to do some manipulation.
                     byte[] imageBytes = byteArrayOutputStream.toByteArray();
@@ -213,7 +211,7 @@ public class OnPreviewFrameAsyncTask extends AsyncTask<Void, Void, WritableMap> 
             } catch (IOException e) {
                 e.printStackTrace();
             }
-            
+
         } else {
             Log.w("PreviewFrameAsyncTask", "The configuration for save image was null!");
             return null;
