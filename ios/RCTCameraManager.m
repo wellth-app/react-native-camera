@@ -51,6 +51,11 @@ RCT_EXPORT_MODULE();
   return self.camera;
 }
 
++ (BOOL)requiresMainQueueSetup
+{
+  return NO;
+}
+
 - (NSDictionary *)constantsToExport
 {
 
@@ -323,7 +328,7 @@ RCT_CUSTOM_VIEW_PROPERTY(captureAudio, BOOL, RCTCamera) {
   }
 }
 
-- (NSArray *)customDirectEventTypes
+- (NSArray *)customBubblingEventTypes
 {
     return @[
       @"focusChanged",

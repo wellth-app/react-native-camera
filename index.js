@@ -1,4 +1,5 @@
-import React, { Component, PropTypes } from "react";
+import React, { Component } from 'react';
+import PropTypes from 'prop-types';
 import {
   DeviceEventEmitter, // android
   NativeAppEventEmitter, // ios
@@ -44,9 +45,8 @@ function convertNativeProps(props) {
     newProps.captureMode = Camera.constants.CaptureMode[props.captureMode];
   }
 
-  if (typeof props.captureTarget === "string") {
-    newProps.captureTarget =
-      Camera.constants.CaptureTarget[props.captureTarget];
+  if (typeof props.captureTarget === 'string') {
+    newProps.captureTarget = Camera.constants.CaptureTarget[props.captureTarget];
   }
 
   // do not register barCodeTypes if no barcode listener
