@@ -19,11 +19,13 @@ import android.view.Surface;
 import com.facebook.react.bridge.LifecycleEventListener;
 import com.facebook.react.bridge.Promise;
 import com.facebook.react.bridge.ReactApplicationContext;
+import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.bridge.WritableNativeMap;
+import com.facebook.react.modules.core.DeviceEventManagerModule;
 
 import java.io.*;
 import java.text.SimpleDateFormat;
@@ -488,6 +490,83 @@ public class RCTCameraModule extends ReactContextBaseJavaModule implements Media
         return byteArray;
     }
 
+    public void quickCapture(final ReadableMap options, final Promise promise) {
+        int orientation = options.hasKey("orientation") ? options.getInt("orientation") : RCTCamera.getInstance().getOrientation();
+        if (orientation == RCT_CAMERA_ORIENTATION_AUTO) {
+            _sensorOrientationChecker.onResume();
+            _sensorOrientationChecker.registerOrientationListener(new RCTSensorOrientationListener() {
+                @Override
+                public void orientationEvent() {
+                    int deviceOrientation = _sensorOrientationChecker.getOrientation();
+                    _sensorOrientationChecker.unregisterOrientationListener();
+                    _sensorOrientationChecker.onPause();
+                    captureSilentWithOrientation(options, promise, deviceOrientation);
+                }
+            });
+        } else {
+            captureSilentWithOrientation(options, promise, orientation);
+        }
+    }
+
+    private void captureSilentWithOrientation(final ReadableMap options, final Promise promise, int deviceOrientation) {
+
+        Camera camera = RCTCamera.getInstance().acquireCameraInstance(options.getInt("type"));
+        if (null == camera) {
+            promise.reject("No camera found.");
+            return;
+        }
+
+        if (options.getInt("mode") == RCT_CAMERA_CAPTURE_MODE_VIDEO) {
+            record(options, promise);
+            return;
+        }
+
+        RCTCamera.getInstance().setCaptureQuality(options.getInt("type"), options.getString("quality"));
+
+        if (options.hasKey("playSoundOnCapture") && options.getBoolean("playSoundOnCapture")) {
+            MediaActionSound sound = new MediaActionSound();
+            sound.play(MediaActionSound.SHUTTER_CLICK);
+        }
+
+        if (options.hasKey("quality")) {
+            RCTCamera.getInstance().setCaptureQuality(options.getInt("type"), options.getString("quality"));
+        }
+
+        RCTCamera.getInstance().adjustCameraRotationToDeviceOrientation(options.getInt("type"), deviceOrientation);
+        camera.setPreviewCallback(null);
+
+        Camera.PictureCallback captureCallback = new Camera.PictureCallback() {
+            @Override
+            public void onPictureTaken(final byte[] data, Camera camera) {
+                camera.stopPreview();
+                camera.startPreview();
+
+                AsyncTask.execute(new Runnable() {
+                    @Override
+                    public void run() {
+                        processImage(new MutableImage(data), options, promise);
+                    }
+                });
+
+                mSafeToCapture = true;
+            }
+        };
+
+        if(mSafeToCapture) {
+            try {
+                camera.takePicture(null, null, captureCallback);
+                mSafeToCapture = false;
+            } catch(RuntimeException ex) {
+                Log.e(TAG, "Couldn't capture photo.", ex);
+            }
+        }
+    }
+
+    @ReactMethod
+    public void captureRepeating(final ReadableMap options) {
+        RCTCamera.getInstance().setRepeatingCapture(options.getInt("type"));
+    }
+
     @ReactMethod
     public void capture(final ReadableMap options, final Promise promise) {
         int orientation = options.hasKey("orientation") ? options.getInt("orientation") : RCTCamera.getInstance().getOrientation();
@@ -794,6 +873,10 @@ public class RCTCameraModule extends ReactContextBaseJavaModule implements Media
         } else {
             promise.resolve(response);
         }
+    }
+
+    private void emitEvent(final ReactContext reactContext, String eventName, @Nullable WritableMap params) {
+        reactContext.getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class).emit(eventName, params);
     }
 
 }
