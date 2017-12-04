@@ -7,7 +7,7 @@
 
 @interface RCTCamera : UIView
 
-@property(nonatomic, copy) RCTDirectEventBlock onCaptureOutput;
+@property(nonatomic, copy) RCTBubblingEventBlock onCaptureOutput;
 
 - (id)initWithManager:(RCTCameraManager *)manager bridge:(RCTBridge *)bridge;
 
