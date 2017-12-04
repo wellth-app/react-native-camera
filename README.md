@@ -17,7 +17,7 @@ The comprehensive camera module for React Native. Including photographs, videos,
 
 ##### Permissions
 To enable `video recording` feature you have to add the following code to the `AndroidManifest.xml`:
-```
+```java
   <uses-permission android:name="android.permission.RECORD_AUDIO"/>
   <uses-permission android:name="android.permission.RECORD_VIDEO"/>
   <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
@@ -30,7 +30,7 @@ To enable `video recording` feature you have to add the following code to the `A
 
 ### Requirements
 1. JDK >= 1.7 (if you run on 1.6 you will get an error on "_cameras = new HashMap<>();")
-2. With iOS 10 and higher you need to add the "Privacy - Camera Usage Description" key to the info.plist of your project. This should be found in 'your_project/ios/your_project/Info.plist'.  Add the following code:
+2. With iOS 10 and higher you need to add the "Privacy - Camera Usage Description" key to the info.plist of your project. This should be found in 'your_project/ios/your_project/Info.plist'. Add the following code:
 ```
 <key>NSCameraUsageDescription</key>
 <string>Your message to user when the camera is accessed for the first time</string>
@@ -45,21 +45,30 @@ To enable `video recording` feature you have to add the following code to the `A
 ```
 3. On Android, you require `buildToolsVersion` of `25.0.2+`. _This should easily and automatically be downloaded by Android Studio's SDK Manager._
 
+4. On iOS 11 and later you need to add `NSPhotoLibraryAddUsageDescription` key to the Info.plist. This key lets you describe the reason your app seeks write-only access to the user’s photo library. Info.plist can be found in 'your_project/ios/your_project/Info.plist'. Add the following code:
+```
+<!-- Include this only if you are planning to use the camera roll -->
+<key>NSPhotoLibraryAddUsageDescription</key>
+<string>Your message to user when the photo library is accessed for the first time</string>
+```
+
+NSPhotoLibraryAddUsageDescription
+
 ### Mostly automatic install with react-native
-1. `npm install react-native-camera@https://github.com/lwansbrough/react-native-camera.git --save`
+1. `npm install react-native-camera --save`
 3. `react-native link react-native-camera`
 
 ### Mostly automatic install with CocoaPods
-1. `npm install react-native-camera@https://github.com/lwansbrough/react-native-camera.git --save`
+1. `npm install react-native-camera --save`
 2. Add the plugin dependency to your Podfile, pointing at the path where NPM installed it:
-```
+```obj-c
 pod 'react-native-camera', path: '../node_modules/react-native-camera'
 ```
 3. Run `pod install`
 
 ### Manual install
 #### iOS
-1. `npm install react-native-camera@https://github.com/lwansbrough/react-native-camera.git --save`
+1. `npm install react-native-camera --save`
 2. In XCode, in the project navigator, right click `Libraries` ➜ `Add Files to [your project's name]`
 3. Go to `node_modules` ➜ `react-native-camera` and add `RCTCamera.xcodeproj`
 4. In XCode, in the project navigator, select your project. Add `libRCTCamera.a` to your project's `Build Phases` ➜ `Link Binary With Libraries`
@@ -68,28 +77,27 @@ pod 'react-native-camera', path: '../node_modules/react-native-camera'
 
 
 #### Android
-1. `npm install react-native-camera@https://github.com/lwansbrough/react-native-camera.git --save`
+1. `npm install react-native-camera --save`
 2. Open up `android/app/src/main/java/[...]/MainApplication.java
   - Add `import com.lwansbrough.RCTCamera.RCTCameraPackage;` to the imports at the top of the file
   - Add `new RCTCameraPackage()` to the list returned by the `getPackages()` method. Add a comma to the previous item if there's already something there.
 
 3. Append the following lines to `android/settings.gradle`:
 
-	```
+	```gradle
 	include ':react-native-camera'
 	project(':react-native-camera').projectDir = new File(rootProject.projectDir, 	'../node_modules/react-native-camera/android')
 	```
 
 4. Insert the following lines inside the dependencies block in `android/app/build.gradle`:
 
-	```
+	```gradle
     compile project(':react-native-camera')
 	```
 5. Declare the permissions in your Android Manifest (required for `video recording` feature)
 
-  ```
+  ```java
   <uses-permission android:name="android.permission.RECORD_AUDIO"/>
-  <uses-permission android:name="android.permission.RECORD_VIDEO"/>
   <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
   <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
   ```
@@ -166,9 +174,9 @@ AppRegistry.registerComponent('BadInstagramCloneApp', () => BadInstagramCloneApp
 
 Values: `Camera.constants.Aspect.fit` or `"fit"`, `Camera.constants.Aspect.fill` or `"fill"` (default), `Camera.constants.Aspect.stretch` or `"stretch"`
 
-The `aspect` property allows you to define how your viewfinder renders the camera's view. For instance, if you have a square viewfinder and you want to fill the it entirely, you have two options: `"fill"`, where the aspect ratio of the camera's view is preserved by cropping the view or `"stretch"`, where the aspect ratio is skewed in order to fit the entire image inside the viewfinder. The other option is `"fit"`, which ensures the camera's entire view fits inside your viewfinder without altering the aspect ratio.
+The `aspect` property allows you to define how your viewfinder renders the camera's view. For instance, if you have a square viewfinder and you want to fill it entirely, you have two options: `"fill"`, where the aspect ratio of the camera's view is preserved by cropping the view or `"stretch"`, where the aspect ratio is skewed in order to fit the entire image inside the viewfinder. The other option is `"fit"`, which ensures the camera's entire view fits inside your viewfinder without altering the aspect ratio.
 
-#### `iOS` `captureAudio`
+#### `iOS` `audio`
 
 Values: `true` (Boolean), `false` (default)
 
