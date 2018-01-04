@@ -1,6 +1,7 @@
 package com.lwansbrough.RCTCamera;
 
 import android.hardware.Camera;
+import android.os.AsyncTask;
 import android.os.Environment;
 import android.util.Log;
 
@@ -38,7 +39,8 @@ public final class CameraPreviewCallback implements Camera.PreviewCallback {
 
     public CameraPreviewCallback(final ReactContext reactContext) {
         this.asyncTask = new OnPreviewFrameAsyncTask(reactContext);
-        this.asyncTask.start();
+//        this.asyncTask.start();
+        this.asyncTask.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
         this.continuousCaptureOutputConfigurations = ContinuousCaptureOutputConfigurations.getDefault();
     }
 
