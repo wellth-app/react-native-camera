@@ -228,7 +228,8 @@ public class OnPreviewFrameAsyncTask extends AsyncTask<Void, Void, WritableMap> 
         synchronized (this) {
             this.isRunning = true;
         }
-        this.execute();
+//        this.execute();
+        this.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
     }
 
     public final void stop() {

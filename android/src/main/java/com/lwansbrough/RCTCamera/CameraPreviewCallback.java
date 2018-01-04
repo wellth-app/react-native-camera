@@ -39,8 +39,7 @@ public final class CameraPreviewCallback implements Camera.PreviewCallback {
 
     public CameraPreviewCallback(final ReactContext reactContext) {
         this.asyncTask = new OnPreviewFrameAsyncTask(reactContext);
-//        this.asyncTask.start();
-        this.asyncTask.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+        this.asyncTask.start();
         this.continuousCaptureOutputConfigurations = ContinuousCaptureOutputConfigurations.getDefault();
     }
 
