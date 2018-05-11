@@ -456,38 +456,13 @@ RCT_EXPORT_METHOD(hasFlash:(RCTPromiseResolveBlock)resolve reject:(RCTPromiseRej
       self.presetCamera = AVCaptureDevicePositionBack;
     }
     
-    if (self.continuousCapture) {
-      // Only a video data output and connection need to be configured for continuous capture.
-      AVCaptureVideoDataOutput *videoOutput = [[AVCaptureVideoDataOutput alloc] init];
-      if ([self.session canAddOutput:videoOutput]) {
-        videoOutput.videoSettings = @{(id)kCVPixelBufferPixelFormatTypeKey: [NSNumber numberWithUnsignedInt:kCVPixelFormatType_32BGRA]};
-        [videoOutput setSampleBufferDelegate:self queue:self.videoOutputQueue];
-        [self.session addOutput:videoOutput];
-        self.videoDeviceOutput = videoOutput;
-      }
-    } else {
-      AVCaptureStillImageOutput *stillImageOutput = [[AVCaptureStillImageOutput alloc] init];
-      if ([self.session canAddOutput:stillImageOutput])
-      {
-        stillImageOutput.outputSettings = @{AVVideoCodecKey : AVVideoCodecJPEG};
-        [self.session addOutput:stillImageOutput];
-        self.stillImageOutput = stillImageOutput;
-      }
-
-      AVCaptureMovieFileOutput *movieFileOutput = [[AVCaptureMovieFileOutput alloc] init];
-      if ([self.session canAddOutput:movieFileOutput])
-      {
-        [self.session addOutput:movieFileOutput];
-        self.movieFileOutput = movieFileOutput;
-      }
-
-      AVCaptureMetadataOutput *metadataOutput = [[AVCaptureMetadataOutput alloc] init];
-      if ([self.session canAddOutput:metadataOutput]) {
-        [metadataOutput setMetadataObjectsDelegate:self queue:self.sessionQueue];
-        [self.session addOutput:metadataOutput];
-        [metadataOutput setMetadataObjectTypes:self.barCodeTypes];
-        self.metadataOutput = metadataOutput;
-      }
+    // Only a video data output and connection need to be configured for continuous capture.
+    AVCaptureVideoDataOutput *videoOutput = [[AVCaptureVideoDataOutput alloc] init];
+    if ([self.session canAddOutput:videoOutput]) {
+      videoOutput.videoSettings = @{(id)kCVPixelBufferPixelFormatTypeKey: [NSNumber numberWithUnsignedInt:kCVPixelFormatType_32BGRA]};
+      [videoOutput setSampleBufferDelegate:self queue:self.videoOutputQueue];
+      [self.session addOutput:videoOutput];
+      self.videoDeviceOutput = videoOutput;
     }
 
     __weak RCTCameraManager *weakSelf = self;
